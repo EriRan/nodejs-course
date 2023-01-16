@@ -41,10 +41,12 @@ const server = http.createServer((req, res) => {
       const parsedBody = Buffer.concat(body).toString();
       console.log(parsedBody);
       const message = parsedBody.split("=")[1];
-      fs.writeFileSync("message.txt", message);
-      res.statusCode = 302;
-      res.setHeader("Location", "/");
-      return res.end();
+      fs.writeFile("message.txt", message, (err) => {
+        // Send response only after we are done with file
+        res.statusCode = 302;
+        res.setHeader("Location", "/");
+        return res.end();
+      });
     });
   }
   // We always want some kind of response. Otherwise Node.js will have to wait for a return from one of the .on() functions
