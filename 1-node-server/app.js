@@ -9,6 +9,7 @@
 // Node.js uses require to import most often?
 // I like import more
 const http = require("http");
+const fs = require("fs");
 
 // Crucial method to creating a server
 // requestListener as an argument
@@ -16,6 +17,7 @@ const http = require("http");
 // Node.js uses event driven functionality heavily
 const server = http.createServer((req, res) => {
   const url = req.url;
+  const method = req.method;
   if (url === "/") {
     res.setHeader("Content-Type", "text/html");
     res.write("<html>");
@@ -25,6 +27,11 @@ const server = http.createServer((req, res) => {
     );
     res.write("</html>");
     return res.end();
+  } else if (url === "/message" && method === "POST") {
+    fs.writeFileSync("message.txt", "DUMMY");
+    res.statusCode = 302;
+    res.setHeader("Location", "/");
+    res.end();
   }
   res.setHeader("Content-Type", "text/html");
   res.write("<html>");
