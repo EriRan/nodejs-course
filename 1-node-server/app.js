@@ -28,17 +28,32 @@ const server = http.createServer((req, res) => {
     res.write("</html>");
     return res.end();
   } else if (url === "/message" && method === "POST") {
-    fs.writeFileSync("message.txt", "DUMMY");
+    // Event listener
+    // Listening for data event
+    // Fires when a new chunk is ready to be read
+    // These are used often in Node
+    const body = [];
+    req.on("data", (chunk) => {
+      console.log(chunk);
+      body.push(chunk);
+    });
+    req.on("end", () => {
+      const parsedBody = Buffer.concat(body).toString();
+      console.log(parsedBody);
+      const message = parsedBody.split("=")[1];
+      fs.writeFileSync("message.txt", message);
+    });
     res.statusCode = 302;
     res.setHeader("Location", "/");
-    res.end();
+    return res.end();
+  } else {
+    res.setHeader("Content-Type", "text/html");
+    res.write("<html>");
+    res.write("<head><title>My first page</title></head>");
+    res.write("<body><h1>Hello from Node.js server!</body>");
+    res.write("</html>");
+    return res.end();
   }
-  res.setHeader("Content-Type", "text/html");
-  res.write("<html>");
-  res.write("<head><title>My first page</title></head>");
-  res.write("<body><h1>Hello from Node.js server!</body>");
-  res.write("</html>");
-  return res.end();
 });
 
 // Node.js will not immediately exit when this function is called
