@@ -16,6 +16,9 @@ const http = require("http");
 // Node.js uses event driven functionality heavily
 const server = http.createServer((req, res) => {
   console.log(req);
+  // This quits the event loop and shuts the server down
+  // This isn't typically called
+  // process.exit();
 });
 
 // Node.js will not immediately exit when this function is called
