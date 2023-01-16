@@ -15,10 +15,20 @@ const http = require("http");
 // Anonymous function provided, modern Javascript style with arrow function
 // Node.js uses event driven functionality heavily
 const server = http.createServer((req, res) => {
-  console.log(req);
+  // These three are important in requests
+  console.log(req.url, req.method, req.headers);
   // This quits the event loop and shuts the server down
   // This isn't typically called
   // process.exit();
+
+  // Response
+  // Express.js does this way easier
+  res.setHeader("Content-Type", "text/html");
+  res.write("<html>");
+  res.write("<head><title>My first page</title></head>");
+  res.write("<body><h1>Hello from Node.js server!</body>");
+  res.write("</html>");
+  res.end();
 });
 
 // Node.js will not immediately exit when this function is called
