@@ -37,7 +37,7 @@ const server = http.createServer((req, res) => {
       console.log(chunk);
       body.push(chunk);
     });
-    req.on("end", () => {
+    return req.on("end", () => {
       const parsedBody = Buffer.concat(body).toString();
       console.log(parsedBody);
       const message = parsedBody.split("=")[1];
@@ -46,14 +46,14 @@ const server = http.createServer((req, res) => {
       res.setHeader("Location", "/");
       return res.end();
     });
-  } else {
-    res.setHeader("Content-Type", "text/html");
-    res.write("<html>");
-    res.write("<head><title>My first page</title></head>");
-    res.write("<body><h1>Hello from Node.js server!</body>");
-    res.write("</html>");
-    return res.end();
   }
+  // We always want some kind of response. Otherwise Node.js will have to wait for a return from one of the .on() functions
+  res.setHeader("Content-Type", "text/html");
+  res.write("<html>");
+  res.write("<head><title>My first page</title></head>");
+  res.write("<body><h1>Hello from Node.js server!</body>");
+  res.write("</html>");
+  return res.end();
 });
 
 // Node.js will not immediately exit when this function is called
