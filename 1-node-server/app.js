@@ -9,7 +9,6 @@
 // Node.js uses require to import most often?
 // I like import more
 const http = require("http");
-const routes = require("./routes");
 
 // Crucial method to creating a server
 // requestListener as an argument
