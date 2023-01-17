@@ -15,6 +15,7 @@ app.use((req, res, next) => {
 });
 */
 
+// Step 3
 app.get("/users", (req, res, next) => {
   console.log("/users middleware called")
   res.write("<h1>/users middleware</h1<");
