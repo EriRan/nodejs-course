@@ -18,11 +18,13 @@ app.use((req, res, next) => {
 app.get("/users", (req, res, next) => {
   console.log("/users middleware called")
   res.write("<h1>/users middleware</h1<");
+  return res.end();
 });
 
 app.get("/", (req, res, next) => {
   console.log("/ middleware called")
   res.write("<h1>/ middleware</h1<");
+  return res.end();
 });
 
 app.listen(3000);
