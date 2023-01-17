@@ -15,7 +15,7 @@ const routes = require("./routes");
 // requestListener as an argument
 // Anonymous function provided, modern Javascript style with arrow function
 // Node.js uses event driven functionality heavily
-const server = http.createServer(routes.handler);
+const server = http.createServer();
 
 // Node.js will not immediately exit when this function is called
 // Some optional arguments
