@@ -19,12 +19,10 @@ const requestHandler = (req, res) => {
     // These are used often in Node
     const body = [];
     req.on("data", (chunk) => {
-      console.log(chunk);
       body.push(chunk);
     });
     return req.on("end", () => {
       const parsedBody = Buffer.concat(body).toString();
-      console.log(parsedBody);
       const message = parsedBody.split("=")[1];
       fs.writeFile("message.txt", message, (err) => {
         // Send response only after we are done with file
