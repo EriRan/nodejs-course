@@ -14,17 +14,18 @@ const express = require("express");
 
 // app is a valid requestHandler so it can be passed to http.createServer
 const app = express();
-// use to add a middleware function
-// Functions executed for every request
-// Call next to move on to another middleware
-app.use((req, res, next) => {
-  console.log("In the middleware");
+
+app.use("/", (req, res, next) => {
+  console.log("This always runs");
   next();
 });
 
-app.use((req, res, next) => {
-  console.log("In another middleware");
-  res.send("<h1>Hello from Express!</h1<");
+app.use("/add-product", (req, res, next) => {
+  res.send("<h1>Add product</h1<");
+});
+
+app.use("/", (req, res, next) => {
+  res.send("<h1>Default page</h1<");
 });
 
 // Shortcut for http.createServer
