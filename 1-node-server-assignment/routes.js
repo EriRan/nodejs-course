@@ -46,6 +46,4 @@ const requestHandler = (req, res) => {
   return res.end();
 };
 
-// Shortcut of module.exports
 exports.handler = requestHandler;
-exports.someText = "Some hardcoded text";
