@@ -27,13 +27,5 @@ app.use((req, res, next) => {
   res.send("<h1>Hello from Express!</h1<");
 });
 
-// Crucial method to creating a server
-// requestListener as an argument
-// Anonymous function provided, modern Javascript style with arrow function
-// Node.js uses event driven functionality heavily
-const server = http.createServer(app);
-
-// Node.js will not immediately exit when this function is called
-// Some optional arguments
-// port and hostname
-server.listen(3000);
+// Shortcut for http.createServer
+app.listen(3000);
