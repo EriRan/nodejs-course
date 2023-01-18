@@ -8,6 +8,8 @@ const app = express();
 
 // parser
 app.use(bodyParser.urlencoded({ extended: false }));
+// Serve public folder statically so that this folder is available in eg. html files
+app.use(express.static(path.join(__dirname, "public")))
 
 const adminRoutes = require("./routes/admin");
 const shopRoutes = require("./routes/shop");
