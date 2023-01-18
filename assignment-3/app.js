@@ -3,9 +3,9 @@ const express = require("express");
 const app = express();
 const path = require("path");
 
-app.use(express.static(path.join(__dirname, "public")))
+const rootDir = path.dirname(require.main.filename);
 
-const rootDir = path.dirname(require.main.filename)
+app.use(express.static(path.join(rootDir, "public")));
 
 app.get("/users", (req, res, next) => {
   res.sendFile(path.join(rootDir, "views", "users.html"));
