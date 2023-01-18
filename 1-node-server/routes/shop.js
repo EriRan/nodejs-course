@@ -4,11 +4,10 @@ const path = require("path");
 const router = express.Router();
 
 const rootDir = require("../util/path");
+const adminData = require("./admin");
 
 router.get("/", (req, res, next) => {
-  // No slashes to the path because path.join will automatically add them
-  // Works in both Windows and Linux!!!!
-  // This will be a pain to update if the package structure is changed
+  console.log(adminData.products);
   res.sendFile(path.join(rootDir, "views", "shop.html"));
 });
 
