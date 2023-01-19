@@ -17,8 +17,8 @@ app.use(bodyParser.urlencoded({ extended: false }));
 // Serve public folder statically so that this folder is available in eg. html files
 app.use(express.static(path.join(__dirname, "public")));
 
-const adminData = require('./routes/admin');
-const shopRoutes = require('./routes/shop');
+const adminData = require("./routes/admin");
+const shopRoutes = require("./routes/shop");
 
 // admin prefix route
 // Inside the router using /admin in all URLs not required if calling express's router!!!
@@ -27,9 +27,7 @@ app.use(shopRoutes);
 
 // 404 error page
 app.use((req, res, next) => {
-  res
-    .status(404)
-    .sendFile(path.join(__dirname, "views", "404.html"));
+  res.status(404).render("404");
 });
 
 // Shortcut for http.createServer
