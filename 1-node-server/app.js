@@ -18,6 +18,7 @@ app.use(express.static(path.join(__dirname, "public")));
 
 const adminRoutes = require("./routes/admin");
 const shopRoutes = require("./routes/shop");
+const errors = require("./controllers/error")
 
 // admin prefix route
 // Inside the router using /admin in all URLs not required if calling express's router!!!
@@ -25,9 +26,7 @@ app.use("/admin", adminRoutes);
 app.use(shopRoutes);
 
 // 404 error page
-app.use((req, res, next) => {
-  res.status(404).render("404", { pageTitle: "Product not found", path: "" });
-});
+app.use(errors.get404);
 
 // Shortcut for http.createServer
 app.listen(3000);
