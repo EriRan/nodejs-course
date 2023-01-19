@@ -6,7 +6,14 @@ const expressHandlebars = require("express-handlebars");
 
 // app is a valid requestHandler so it can be passed to http.createServer
 const app = express();
-app.engine("hbs", expressHandlebars.engine())
+app.engine(
+  "hbs",
+  expressHandlebars.engine({
+    layoutsDir: "views/layouts/",
+    defaultLayout: "main-layout",
+    extname: "hbs",
+  })
+);
 // Templating engines
 // app set sets values globally. Can be keys or configuration items
 app.set("view engine", "hbs");
