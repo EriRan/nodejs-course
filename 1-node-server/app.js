@@ -26,7 +26,7 @@ app.use(shopRoutes);
 
 // 404 error page
 app.use((req, res, next) => {
-  res.status(404).render("404", { pageTitle: "Product not found" });
+  res.status(404).render("404", { pageTitle: "Product not found", path: "" });
 });
 
 // Shortcut for http.createServer
