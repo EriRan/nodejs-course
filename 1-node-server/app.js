@@ -2,13 +2,14 @@ const path = require("path");
 
 const express = require("express");
 const bodyParser = require("body-parser");
+const expressHandlebars = require("express-handlebars");
 
 // app is a valid requestHandler so it can be passed to http.createServer
 const app = express();
-
+app.engine("hbs", expressHandlebars.engine())
 // Templating engines
 // app set sets values globally. Can be keys or configuration items
-app.set("view engine", "pug");
+app.set("view engine", "hbs");
 // No need to set views location like this because views is the default location in express.js. Just here as an example
 app.set("views", "views");
 
