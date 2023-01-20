@@ -33,10 +33,18 @@ module.exports = class Product {
   }
 
   /**
-   * Can call this in Product class and not just product instance
+   * Can call this in Product class and not just product instance because this is static
+   * Works just like in Java
    * @returns
    */
   static fetchAll(cb) {
     return getProductsFromFile(cb);
+  }
+
+  static findById(id, cb) {
+    getProductsFromFile((products) => {
+      const product = products.find((product) => product.id === id);
+      cb(product);
+    });
   }
 };
