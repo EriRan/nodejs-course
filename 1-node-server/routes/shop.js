@@ -12,6 +12,7 @@ router.get("/products", shopController.getProducts);
 // Order of the router.gets is important. eg. /products/delete would clash with /products/:productId
 router.get("/products/:productId", shopController.getProduct);
 router.get("/cart", shopController.getCart);
+router.post("/cart", shopController.postCart);
 router.get("/orders", shopController.getOrders);
 router.get("/checkout", shopController.getCheckout);
 
