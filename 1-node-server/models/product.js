@@ -45,6 +45,17 @@ module.exports = class Product {
     });
   }
 
+  static delete(id) {
+    getProductsFromFile((products) => {
+      const updatedProducts = products.filter((product) => product.id === id);
+      fs.writeFile(p, JSON.stringify(updatedProducts), err => {
+        if (!err) {
+          // Cart next
+        }
+      });
+    });
+  }
+
   /**
    * Can call this in Product class and not just product instance because this is static
    * Works just like in Java
