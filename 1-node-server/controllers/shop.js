@@ -1,4 +1,5 @@
 const Product = require("../models/product");
+const Cart = require("../models/cart");
 
 exports.getProducts = (req, res, next) => {
   return Product.fetchAll((products) => {
@@ -16,7 +17,7 @@ exports.getProducts = (req, res, next) => {
 
 exports.getProduct = (req, res, next) => {
   const prodId = req.params.productId;
-  
+
   Product.findById(prodId, (product) => {
     if (!product) {
       console.error("No product found with prodId: " + prodId);
@@ -50,6 +51,10 @@ exports.getCart = (req, res, next) => {
 exports.postCart = (req, res, next) => {
   const prodId = req.body.productId;
   console.log(prodId);
+  Product.findById(prodId, (product) => {
+    Cart.addProduct(prodId, product.price);
+  });
+
   res.redirect("/cart");
 };
 
