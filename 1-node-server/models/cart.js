@@ -30,11 +30,26 @@ module.exports = class Cart {
         cart.products = [...cart.products, updatedProduct];
       }
       cart.totalPrice = cart.totalPrice + productPrice;
-      fs.writeFile(p, JSON.stringify(cart), err => {
+      fs.writeFile(p, JSON.stringify(cart), (err) => {
         console.log(err);
       });
     });
-    // Analyze if there is an existing product
-    // Add new or increase quantity
+  }
+
+  static deleteProduct(id, productPrice) {
+    fs.readFile(p, (err, fileContent) => {
+      if (err) {
+        console.error("Cart not found");
+        return;
+      }
+      const updatedCart = { ...JSON.parse(fileContent) };
+      const product = updatedCart.products.find((prod) => prod.id === id);
+      const productQty = product.qty;
+      updatedCart.products = updatedCart.products.filter((prod) => prod !== id);
+      updatedCart.totalPrice = updatedCart.totalPrice - productPrice * productQty;
+      fs.writeFile(p, JSON.stringify(updatedCart), (err) => {
+        console.log(err);
+      });
+    });
   }
 };

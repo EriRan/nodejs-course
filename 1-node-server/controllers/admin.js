@@ -43,13 +43,19 @@ exports.postEditProduct = (req, res, next) => {
   const updatedPrice = req.body.price;
   const updatedImageUrl = req.body.imageUrl;
   const updatedDescription = req.body.description;
-  const updatedProduct = new Product(prodId, updatedTitle, updatedImageUrl, updatedDescription, updatedPrice);
+  const updatedProduct = new Product(
+    prodId,
+    updatedTitle,
+    updatedImageUrl,
+    updatedDescription,
+    updatedPrice
+  );
   updatedProduct.save();
   res.redirect("/admin/products");
 };
 
 exports.getProducts = (req, res, next) => {
-  const products = Product.fetchAll((products) => {
+  Product.fetchAll((products) => {
     res.render("admin/products", {
       prods: products,
       path: "/admin/products",
@@ -60,8 +66,7 @@ exports.getProducts = (req, res, next) => {
 
 exports.postDeleteProduct = (req, res, next) => {
   const prodId = req.body.productId;
-  
-  const updatedProduct = new Product(prodId, updatedTitle, updatedImageUrl, updatedDescription, updatedPrice);
-  updatedProduct.save();
+
+  Product.deleteById(prodId);
   res.redirect("/admin/products");
 };
