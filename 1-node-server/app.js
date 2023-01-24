@@ -56,7 +56,7 @@ Cart.belongsToMany(Product, { through: CartItem }); // CartItem is the link tabl
 Product.belongsToMany(Cart, { through: CartItem });
 
 sequelize
-  .sync({ force: true }) // This overwrites the tables. Do not use this in production
+  .sync() // This overwrites the tables. Do not use this in production
   .then((result) => {
     return User.findByPk(1);
     // Shortcut for http.createServer
