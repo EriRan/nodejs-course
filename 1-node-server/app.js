@@ -6,6 +6,8 @@ const bodyParser = require("body-parser");
 const sequelize = require("./util/database");
 const Product = require("./models/product");
 const User = require("./models/user");
+const Cart = require("./models/cart");
+const CartItem = require("./models/cart-item");
 
 // app is a valid requestHandler so it can be passed to http.createServer
 const app = express();
@@ -26,7 +28,7 @@ app.use(express.static(path.join(__dirname, "public")));
 // User guaranteed to be found
 app.use((req, res, next) => {
   User.findByPk(1)
-    .then(user => {
+    .then((user) => {
       req.user = user;
       next(); // Need this so that user can be passed to next middlewares
     })
@@ -45,11 +47,16 @@ app.use(shopRoutes);
 // 404 error page
 app.use(errors.get404);
 
+// SQL relations, "associations" in Sequelize
 Product.belongsTo(User, { constraints: true, onDelete: "CASCADE" });
 User.hasMany(Product);
+User.hasOne(Cart);
+Cart.belongsTo(User);
+Cart.belongsToMany(Product, { through: CartItem }); // CartItem is the link table. In addition to the link it holds the quantity
+Product.belongsToMany(Cart, { through: CartItem });
 
 sequelize
-  .sync() // This overwrites the tables. Do not use this in production
+  .sync({ force: true }) // This overwrites the tables. Do not use this in production
   .then((result) => {
     return User.findByPk(1);
     // Shortcut for http.createServer
