@@ -5,6 +5,7 @@ const bodyParser = require("body-parser");
 
 // app is a valid requestHandler so it can be passed to http.createServer
 const app = express();
+
 // Templating engines
 // app set sets values globally. Can be keys or configuration items
 app.set("view engine", "ejs");
@@ -18,7 +19,7 @@ app.use(express.static(path.join(__dirname, "public")));
 
 const adminRoutes = require("./routes/admin");
 const shopRoutes = require("./routes/shop");
-const errors = require("./controllers/error")
+const errors = require("./controllers/error");
 
 // admin prefix route
 // Inside the router using /admin in all URLs not required if calling express's router!!!
