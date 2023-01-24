@@ -34,7 +34,6 @@ exports.getProduct = (req, res, next) => {
 exports.getIndex = (req, res, next) => {
   Product.fetchAll()
     .then(([rows, fieldData]) => {
-      console.log("getProducts");
       res.render("shop/product-list", {
         prods: rows,
         path: "/products",
