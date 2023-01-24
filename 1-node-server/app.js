@@ -68,6 +68,10 @@ sequelize
     return Promise.resolve(user);
   })
   .then((user) => {
+    // It keeps creating more carts despite relationships
+    return user.createCart();
+  })
+  .then((cart) => {
     app.listen(3000);
   })
   .catch((err) => {
