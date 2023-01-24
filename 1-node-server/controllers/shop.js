@@ -18,13 +18,14 @@ exports.getProduct = (req, res, next) => {
 
   Product.findById(prodId)
     .then(([product]) => {
-      if (!product) {
+      if (!product || !product.length) {
         console.error("No product found with prodId: " + prodId);
         return res.end();
       }
+      const singleProduct = product[0];
       return res.render("shop/product-detail", {
-        product: product[0],
-        pageTitle: product[0].title,
+        product: singleProduct,
+        pageTitle: singleProduct.title,
         path: "/products",
       });
     })
