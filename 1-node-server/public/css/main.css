@@ -32,6 +32,14 @@ form {
   text-align: center;
 }
 
+.image {
+  max-height: 20rem
+}
+
+.image img {
+  height: 100%;
+}
+
 .main-header__nav {
   height: 100%;
   display: none;

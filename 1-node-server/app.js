@@ -3,6 +3,8 @@ const path = require("path");
 const express = require("express");
 const bodyParser = require("body-parser");
 
+const sequelize = require("./util/database");
+
 // app is a valid requestHandler so it can be passed to http.createServer
 const app = express();
 
@@ -29,5 +31,12 @@ app.use(shopRoutes);
 // 404 error page
 app.use(errors.get404);
 
-// Shortcut for http.createServer
-app.listen(3000);
+sequelize
+  .sync()
+  .then((result) => {
+    // Shortcut for http.createServer
+    app.listen(3000);
+  })
+  .catch((err) => {
+    console.error(err);
+  });
