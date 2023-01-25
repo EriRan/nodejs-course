@@ -14,20 +14,7 @@ exports.getProducts = (req, res, next) => {
 
 exports.getProduct = (req, res, next) => {
   const prodId = req.params.productId;
-  // Where condition example
-  /*
-  Product.findAll({ where: { id: prodId } })
-    .then((products) => {
-      return res.render("shop/product-detail", {
-        product: products[0],
-        pageTitle: products[0].title,
-        path: "/products",
-      });
-    })
-    .catch((err) => console.error(err));
-    */
-
-  Product.findByPk(prodId)
+  Product.findById(prodId)
     .then((product) => {
       if (!product) {
         console.error("No product found with prodId: " + prodId);
