@@ -27,7 +27,7 @@ app.use((req, res, next) => {
   // Hardcoded user id here
   User.findById("63d11cf8013e2911460b4228")
     .then((user) => {
-      req.user = user;
+      req.user = new User(user.name, user.email, user.cart, user._id);
       next();
     })
     .catch((err) => console.error(err));

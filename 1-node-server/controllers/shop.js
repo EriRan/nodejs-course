@@ -63,6 +63,15 @@ exports.postCart = (req, res, next) => {
   // yes yes make them all top level variables
   // this is horrible
   const prodId = req.body.productId;
+  const product = Product.findById(prodId)
+    .then((product) => {
+      return req.user.addToCart(product);
+    })
+    .then((result) => {
+      console.log(result);
+    })
+    .catch((err) => console.error(err));
+  /*
   let fetchedCart;
   let newQuantity = 1;
   req.user
@@ -99,6 +108,7 @@ exports.postCart = (req, res, next) => {
       res.redirect("/cart");
     })
     .catch((err) => console.error(err));
+    */
 };
 
 exports.postCartDeleteProduct = (req, res, next) => {
