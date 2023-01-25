@@ -10,11 +10,14 @@ router.get("/", shopController.getIndex);
 router.get("/products", shopController.getProducts);
 // Dynamic id example
 // Order of the router.gets is important. eg. /products/delete would clash with /products/:productId
+/*
+* TODO: Convert to MongoDb
 router.get("/products/:productId", shopController.getProduct);
 router.get("/cart", shopController.getCart);
 router.post("/cart", shopController.postCart);
 router.post("/cart-delete-item", shopController.postCartDeleteProduct);
 router.post("/create-order", shopController.postOrder);
 router.get("/orders", shopController.getOrders);
+*/
 
 module.exports = router;

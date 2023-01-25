@@ -2,7 +2,7 @@ const path = require("path");
 
 const express = require("express");
 const bodyParser = require("body-parser");
-const mongoConnect = require("./util/database");
+const mongoConnect = require("./util/database").mongoConnect;
 
 // Load local configuration file
 require("dotenv").config();
@@ -23,22 +23,22 @@ app.use(express.static(path.join(__dirname, "public")));
 
 app.use((req, res, next) => {
   // TODO: Mongodb middleware?
+  next();
 });
 
 // Route logic commented out to verify that MongoDb works
-// const adminRoutes = require("./routes/admin");
-// const shopRoutes = require("./routes/shop");
+const adminRoutes = require("./routes/admin");
+const shopRoutes = require("./routes/shop");
 const errors = require("./controllers/error");
 
 // admin prefix route
 // Inside the router using /admin in all URLs not required if calling express's router!!!
-// app.use("/admin", adminRoutes);
-// app.use(shopRoutes);
+app.use("/admin", adminRoutes);
+app.use(shopRoutes);
 
 // 404 error page
 app.use(errors.get404);
 
 mongoConnect((client) => {
-  console.log(client);
   app.listen(3000);
 });

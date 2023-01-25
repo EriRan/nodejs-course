@@ -1,17 +1,29 @@
 const mongodb = require("mongodb");
 const MongoClient = mongodb.MongoClient;
 
-const mongoConnect = (callback) => {
-  const mongodbUrl = `mongodb+srv://${process.env.mongodb_user}:${process.env.mongodb_password}@${process.env.mongodb_cluster_address}/?retryWrites=true&w=majority`;
+let _db;
 
-  console.log(mongodbUrl);
+const mongoConnect = (callback) => {
+  const mongodbUrl = `mongodb+srv://${process.env.mongodb_user}:${process.env.mongodb_password}@${process.env.mongodb_cluster_address}/shop?retryWrites=true&w=majority`;
 
   MongoClient.connect(mongodbUrl)
-    .then((result) => {
+    .then((client) => {
       console.log("Connected to MongoDb!");
-      callback(result);
+      _db = client.db();
+      callback();
     })
-    .catch((err) => console.error(err));
+    .catch((err) => {
+      console.error(err);
+      throw err;
+    });
 };
 
-module.exports = mongoConnect;
+const getDb = () => {
+  if (_db) {
+    return _db;
+  }
+  throw "No database found!";
+};
+
+exports.mongoConnect = mongoConnect;
+exports.getDb = getDb;
