@@ -13,11 +13,10 @@ exports.postAddProduct = (req, res, next) => {
   const imageUrl = req.body.imageUrl;
   const price = req.body.price;
   const description = req.body.description;
-  // Sequelize adds automatically a method like this with the relationship
-  // MAGIC
-  const product = new Product(title, price, description, imageUrl);
+  
+  const product = new Product(title, price, description, imageUrl, null, req.user._id);
 
-  product
+  return product
     .save()
     .then((result) => {
       console.log("Product created");

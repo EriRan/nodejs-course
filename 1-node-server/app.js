@@ -4,6 +4,8 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const mongoConnect = require("./util/database").mongoConnect;
 
+const User = require("./models/user");
+
 // Load local configuration file
 require("dotenv").config();
 
@@ -22,8 +24,13 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, "public")));
 
 app.use((req, res, next) => {
-  // TODO: Mongodb middleware?
-  next();
+  // Hardcoded user id here
+  User.findById("63d11cf8013e2911460b4228")
+    .then((user) => {
+      req.user = user;
+      next();
+    })
+    .catch((err) => console.error(err));
 });
 
 // Route logic commented out to verify that MongoDb works
