@@ -14,6 +14,7 @@ exports.postAddProduct = (req, res, next) => {
     price: req.body.price,
     imageUrl: req.body.imageUrl,
     description: req.body.description,
+    userId: req.user // Can just pass the entire object here because it is a Mongoose model
   });
   console.log(product);
 

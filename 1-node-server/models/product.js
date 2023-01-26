@@ -20,6 +20,11 @@ const productSchema = new Schema({
     type: String,
     required: true,
   },
+  userId: {
+    type: Schema.Types.ObjectId,
+    ref: "User", // Which other Mongoose entity is this related to?
+    required: true,
+  },
 });
 
 module.exports = mongoose.model("Product", productSchema);
