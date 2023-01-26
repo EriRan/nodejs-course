@@ -15,6 +15,8 @@ exports.getProducts = (req, res, next) => {
 
 exports.getProduct = (req, res, next) => {
   const prodId = req.params.productId;
+  // This Mongoose's findById converts the provided String into MongoDb ObjectId
+  // Very convenient
   Product.findById(prodId)
     .then((product) => {
       if (!product) {
