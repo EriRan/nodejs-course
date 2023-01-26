@@ -23,15 +23,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 // Serve public folder statically so that this folder is available in eg. html files
 app.use(express.static(path.join(__dirname, "public")));
 
-app.use((req, res, next) => {
-  // Hardcoded user id here
-  User.findById("63d214cd8bdfe666acdb13c6")
-    .then((user) => {
-      req.user = new User(user.name, user.email, user.cart, user._id);
-      next();
-    })
-    .catch((err) => console.error(err));
-});
+// TODO: user middleware with Mongoose
 
 // Route logic commented out to verify that MongoDb works
 const adminRoutes = require("./routes/admin");
