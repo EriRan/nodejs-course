@@ -88,8 +88,18 @@ class User {
 
   addOrder() {
     const db = getDb();
-    return db.collection("orders")
-      .insertOne(this.cart)
+    // Embedded document here is a great idea because price of the products may not change here
+    return this.getCart()
+      .then((products) => {
+        const order = {
+          items: products,
+          user: {
+            _id: new ObjectId(this._id),
+            name: this.name,
+          },
+        };
+        return db.collection("orders").insertOne(order);
+      })
       .then((result) => {
         // Empty web app cart
         this.cart = { items: [] };
@@ -101,6 +111,10 @@ class User {
             { $set: { cart: { items: [] } } }
           );
       });
+  }
+
+  getOrders() {
+    const db = getDb();
   }
 
   static findById(userId) {
