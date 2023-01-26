@@ -2,6 +2,8 @@ const path = require("path");
 
 const express = require("express");
 const bodyParser = require("body-parser");
+const mongoose = require("mongoose");
+
 const mongoConnect = require("./util/database").mongoConnect;
 
 const User = require("./models/user");
@@ -46,6 +48,10 @@ app.use(shopRoutes);
 // 404 error page
 app.use(errors.get404);
 
-mongoConnect((client) => {
-  app.listen(3000);
-});
+const mongodbUrl = `mongodb+srv://${process.env.mongodb_user}:${process.env.mongodb_password}@${process.env.mongodb_cluster_address}/shop?retryWrites=true&w=majority`;
+mongoose
+  .connect(mongodbUrl)
+  .then((result) => {
+    app.listen(3000);
+  })
+  .catch((err) => console.error(err));
