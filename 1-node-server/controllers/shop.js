@@ -60,8 +60,6 @@ exports.getCart = (req, res, next) => {
 };
 
 exports.postCart = (req, res, next) => {
-  // yes yes make them all top level variables
-  // this is horrible
   const prodId = req.body.productId;
   Product.findById(prodId)
     .then((product) => {
