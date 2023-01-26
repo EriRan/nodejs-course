@@ -25,7 +25,7 @@ app.use(express.static(path.join(__dirname, "public")));
 
 app.use((req, res, next) => {
   // Hardcoded user id here
-  User.findById("63d11cf8013e2911460b4228")
+  User.findById("63d214cd8bdfe666acdb13c6")
     .then((user) => {
       req.user = new User(user.name, user.email, user.cart, user._id);
       next();
