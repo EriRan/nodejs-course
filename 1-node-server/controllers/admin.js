@@ -9,17 +9,17 @@ exports.getAddProduct = (req, res, next) => {
 };
 
 exports.postAddProduct = (req, res, next) => {
-  const title = req.body.title;
-  const imageUrl = req.body.imageUrl;
-  const price = req.body.price;
-  const description = req.body.description;
-  
-  const product = new Product(title, price, description, imageUrl, null, req.user._id);
+  const product = new Product({
+    title: req.body.title,
+    price: req.body.price,
+    imageUrl: req.body.imageUrl,
+    description: req.body.description,
+  });
+  console.log(product);
 
   return product
-    .save()
+    .save() // save provided by Mongoose
     .then((result) => {
-      console.log("Product created");
       res.redirect("/admin/products");
     })
     .catch((err) => console.error(err));
