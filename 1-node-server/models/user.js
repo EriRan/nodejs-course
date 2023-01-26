@@ -82,8 +82,25 @@ class User {
       .collection("users")
       .updateOne(
         { _id: new ObjectId(this._id) },
-        { $set: { cart: {items: updatedCartItems} } }
+        { $set: { cart: { items: updatedCartItems } } }
       );
+  }
+
+  addOrder() {
+    const db = getDb();
+    return db.collection("orders")
+      .insertOne(this.cart)
+      .then((result) => {
+        // Empty web app cart
+        this.cart = { items: [] };
+        // Empty user's cart in the database too
+        return db
+          .collection("users")
+          .updateOne(
+            { _id: new ObjectId(this._id) },
+            { $set: { cart: { items: [] } } }
+          );
+      });
   }
 
   static findById(userId) {
