@@ -62,6 +62,7 @@ class User {
       .find({ _id: { $in: productIds } })
       .toArray()
       .then((products) => {
+        // Could implement cart mismatch handling: if cart in the database is different than the one in the current user, then reset the current user's cart in both the database and the web app
         return products.map((product) => {
           return {
             ...product,
