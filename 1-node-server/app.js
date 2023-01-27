@@ -46,6 +46,20 @@ app.use(
     store: store,
   })
 );
+// Middleware to find the same user from mongoDb that is in the current session
+// Session data also comes from MongoDb
+app.use((req, res, next) => {
+  if (!req.session.user) {
+    next();
+    return;
+  }
+  User.findById(req.session.user._id)
+    .then((user) => {
+      req.user = user;
+      next();
+    })
+    .catch((err) => console.log(err));
+});
 
 app.use("/admin", adminRoutes);
 app.use(shopRoutes);

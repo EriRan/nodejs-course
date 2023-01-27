@@ -1,6 +1,5 @@
 const Product = require("../models/product");
 const Order = require("../models/order");
-const User = require("../models/user");
 
 exports.getProducts = (req, res, next) => {
   Product.find()
@@ -47,7 +46,7 @@ exports.getIndex = (req, res, next) => {
 };
 
 exports.getCart = (req, res, next) => {
-  User.findById(req.session.user)
+  req.user
     .populate("cart.items.productId")
     .then((user) => {
       if (!user) {
@@ -71,14 +70,9 @@ exports.getCart = (req, res, next) => {
 
 exports.postCart = (req, res, next) => {
   const prodId = req.body.productId;
-  let mongoUser;
-  User.findById(req.session.user)
-    .then((user) => {
-      mongoUser = user;
-      return Product.findById(prodId);
-    })
+  Product.findById(prodId)
     .then((product) => {
-      return mongoUser.addToCart(product);
+      return req.user.addToCart(product);
     })
     .then((result) => {
       res.redirect("/cart");
@@ -87,10 +81,8 @@ exports.postCart = (req, res, next) => {
 
 exports.postCartDeleteProduct = (req, res, next) => {
   const prodId = req.body.productId;
-  User.findById(req.session.user)
-    .then((user) => {
-      return user.removeFromCart(prodId);
-    })
+  req.user
+    .removeFromCart(prodId)
     .then((result) => {
       res.redirect("/cart");
     })
@@ -98,8 +90,7 @@ exports.postCartDeleteProduct = (req, res, next) => {
 };
 
 exports.postOrder = (req, res, next) => {
-  let mongoUser;
-  User.findById(req.session.user)
+  req.user
     .populate("cart.items.productId")
     .then((user) => {
       mongoUser = user;
@@ -108,8 +99,8 @@ exports.postOrder = (req, res, next) => {
       });
       const order = new Order({
         user: {
-          name: mongoUser.name,
-          userId: mongoUser,
+          name: user.name,
+          userId: user,
         },
         products: products,
       });
@@ -125,7 +116,7 @@ exports.postOrder = (req, res, next) => {
 };
 
 exports.getOrders = (req, res, next) => {
-  if (!req.session.user) {
+  if (!req.user) {
     res.render("shop/orders", {
       path: "/orders",
       pageTitle: "Your Orders",
@@ -133,7 +124,7 @@ exports.getOrders = (req, res, next) => {
       isAuthenticated: req.session.isLoggedIn,
     });
   } else {
-    Order.find({ "user.userId": req.session.user._id })
+    Order.find({ "user.userId": req.user._id })
       .then((orders) => {
         res.render("shop/orders", {
           path: "/orders",
