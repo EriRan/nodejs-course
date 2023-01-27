@@ -19,12 +19,11 @@ exports.postAddProduct = (req, res, next) => {
     price: price,
     description: description,
     imageUrl: imageUrl,
-    userId: req.user,
+    userId: req.session.user,
   });
   product
     .save()
     .then((result) => {
-      // console.log(result);
       console.log("Created Product");
       res.redirect("/admin/products");
     })
