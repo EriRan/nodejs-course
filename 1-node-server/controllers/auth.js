@@ -8,6 +8,14 @@ exports.getLogin = (req, res, next) => {
   });
 };
 
+exports.getSignup = (req, res, next) => {
+  res.render('auth/signup', {
+    path: '/signup',
+    pageTitle: 'Signup',
+    isAuthenticated: false
+  });
+};
+
 exports.postLogin = (req, res, next) => {
   User.findOne({ email: req.body.email })
     .then((user) => {
@@ -36,3 +44,5 @@ exports.postLogout = (req, res, next) => {
     return res.redirect("/");
   });
 };
+
+exports.postSignup = (req, res, next) => {};
