@@ -16,7 +16,7 @@ exports.postLogin = (req, res, next) => {
       }
       req.session.user = user;
       req.session.isLoggedIn = true;
-      res.redirect("/");
+      return res.redirect("/");
     })
     .catch((err) => console.log(err));
 };
@@ -27,6 +27,6 @@ exports.postLogout = (req, res, next) => {
       console.error(err);
     }
     // Cookie not deleted because the browser will clear it on its own
-    res.redirect("/");
+    return res.redirect("/");
   });
 };
