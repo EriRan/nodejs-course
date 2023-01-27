@@ -4,6 +4,7 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 const session = require("express-session");
+const MongoDBStore = require("connect-mongodb-session")(session);
 
 const errorController = require("./controllers/error");
 const User = require("./models/user");
@@ -11,6 +12,11 @@ const User = require("./models/user");
 require("dotenv").config();
 
 const app = express();
+const mongodbUrl = `mongodb+srv://${process.env.mongodb_user}:${process.env.mongodb_password}@${process.env.mongodb_cluster_address}/shop`;
+const store = new MongoDBStore({
+  uri: mongodbUrl,
+  collection: "sessions",
+});
 
 app.set("view engine", "ejs");
 app.set("views", "views");
@@ -37,6 +43,7 @@ app.use(
     secret: process.env.express_session_secret,
     resave: false,
     saveUninitialized: false,
+    store: store,
   })
 );
 
@@ -55,7 +62,6 @@ app.use(authRoutes);
 
 app.use(errorController.get404);
 
-const mongodbUrl = `mongodb+srv://${process.env.mongodb_user}:${process.env.mongodb_password}@${process.env.mongodb_cluster_address}/shop?retryWrites=true&w=majority`;
 mongoose
   .connect(mongodbUrl)
   .then((result) => {
