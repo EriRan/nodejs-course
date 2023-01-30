@@ -27,6 +27,12 @@ router.post(
     body("password", "Password has to be 5 or more characters and alphanumeric")
       .isLength({ min: 5 })
       .isAlphanumeric(),
+    body("confirmPassword").custom((value, { req }) => {
+      if (value !== req.body.password) {
+        throw new Error("Passwords have to match");
+      }
+      return true;
+    }),
   ],
 
   authController.postSignup
