@@ -39,7 +39,7 @@ exports.getEditProduct = (req, res, next) => {
   const prodId = req.params.productId;
   Product.findById(prodId)
     .then((product) => {
-      if (!product || product.userId !== req.user._id) {
+      if (!product || product.userId.toString() !== req.user._id.toString()) {
         return res.redirect("/");
       }
       res.render("admin/edit-product", {
@@ -61,7 +61,7 @@ exports.postEditProduct = (req, res, next) => {
 
   Product.findById(prodId)
     .then((product) => {
-      if (!product || product.userId !== req.user._id) {
+      if (!product || product.userId.toString() !== req.user._id.toString()) {
         return res.redirect("/");
       }
       product.title = updatedTitle;
@@ -80,7 +80,7 @@ exports.postEditProduct = (req, res, next) => {
 };
 
 exports.getProducts = (req, res, next) => {
-  Product.find()
+  Product.find({userId: req.user._id })
     .then((products) => {
       res.render("admin/products", {
         prods: products,
