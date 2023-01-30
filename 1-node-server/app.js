@@ -5,6 +5,7 @@ const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 const session = require("express-session");
 const MongoDBStore = require("connect-mongodb-session")(session);
+const csrf = require("csurf");
 
 const errorController = require("./controllers/error");
 const User = require("./models/user");
@@ -17,6 +18,7 @@ const store = new MongoDBStore({
   uri: mongodbUrl,
   collection: "sessions",
 });
+const csrfProtection = csrf();
 
 app.set("view engine", "ejs");
 app.set("views", "views");
@@ -46,6 +48,8 @@ app.use(
     store: store,
   })
 );
+app.use(csrfProtection);
+
 // Middleware to find the same user from mongoDb that is in the current session
 // Session data also comes from MongoDb
 app.use((req, res, next) => {
