@@ -1,4 +1,5 @@
 const User = require("../models/user");
+const bcrypt = require("bcryptjs");
 
 exports.getLogin = (req, res, next) => {
   res.render("auth/login", {
@@ -58,14 +59,24 @@ exports.postSignup = (req, res, next) => {
         console.error("Email already exists");
         return res.redirect("/signup");
       }
+      return bcrypt.hash(password, 12);
+    })
+    .then((hashedPassword) => {
+      if (!hashedPassword) {
+        return;
+      }
       const user = new User({
         email: email,
-        password: password,
+        password: hashedPassword,
         cart: { items: [] },
       });
       return user.save();
     })
     .then((result) => {
+      // How to end promise chain preemptively?
+      if (!result) {
+        return;
+      }
       return res.redirect("/login");
     })
     .catch((err) => console.error(err));
