@@ -18,20 +18,34 @@ exports.getSignup = (req, res, next) => {
 };
 
 exports.postLogin = (req, res, next) => {
+  const password = req.body.password;
   User.findOne({ email: req.body.email })
     .then((user) => {
       if (!user) {
         console.error("User not found");
+        return res.redirect("/login");
       }
-      req.session.user = user;
-      req.session.isLoggedIn = true;
-      // Call session.save() in order to guarantee that we have a session in MongoDb before redirecting
-      return req.session.save((err) => {
-        if (err) {
+      bcrypt
+        .compare(password, user.password)
+        .then((doMatch) => {
+          if (doMatch) {
+            req.session.user = user;
+            req.session.isLoggedIn = true;
+            // Call session.save() in order to guarantee that we have a session in MongoDb before redirecting
+            return req.session.save((err) => {
+              if (err) {
+                console.error(err);
+              }
+              return res.redirect("/");
+            });
+          }
+          console.log("Invalid password");
+          return res.reditect("/login");
+        })
+        .catch((err) => {
           console.error(err);
-        }
-        return res.redirect("/");
-      });
+          res.redirect("/login");
+        });
     })
     .catch((err) => console.log(err));
 };
@@ -59,25 +73,21 @@ exports.postSignup = (req, res, next) => {
         console.error("Email already exists");
         return res.redirect("/signup");
       }
-      return bcrypt.hash(password, 12);
+      // Nested promise chain in order to end the promises if we redirect above
+      return bcrypt
+        .hash(password, 12)
+        .then((hashedPassword) => {
+          const user = new User({
+            email: email,
+            password: hashedPassword,
+            cart: { items: [] },
+          });
+          return user.save();
+        })
+        .then((result) => {
+          return res.redirect("/login");
+        });
     })
-    .then((hashedPassword) => {
-      if (!hashedPassword) {
-        return;
-      }
-      const user = new User({
-        email: email,
-        password: hashedPassword,
-        cart: { items: [] },
-      });
-      return user.save();
-    })
-    .then((result) => {
-      // How to end promise chain preemptively?
-      if (!result) {
-        return;
-      }
-      return res.redirect("/login");
-    })
+
     .catch((err) => console.error(err));
 };
