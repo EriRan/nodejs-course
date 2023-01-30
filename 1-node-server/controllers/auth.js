@@ -16,9 +16,16 @@ exports.getLogin = (req, res, next) => {
 };
 
 exports.getSignup = (req, res, next) => {
+  let message = req.flash("error");
+  if (message.length > 0) {
+    message = message[0];
+  } else {
+    message = null;
+  }
   res.render("auth/signup", {
     path: "/signup",
     pageTitle: "Signup",
+    errorMessage: message,
   });
 };
 
@@ -44,8 +51,8 @@ exports.postLogin = (req, res, next) => {
               return res.redirect("/");
             });
           }
-          console.log("Invalid password");
-          return res.reditect("/login");
+          req.flash("error", "Invalid email or password");
+          return res.redirect("/login");
         })
         .catch((err) => {
           console.error(err);
@@ -75,7 +82,7 @@ exports.postSignup = (req, res, next) => {
     .then((userDoc) => {
       // If user already exists, redirect back to current page
       if (userDoc) {
-        console.error("Email already exists");
+        req.flash("error", "Email already exists. Please pick another");
         return res.redirect("/signup");
       }
       // Nested promise chain in order to end the promises if we redirect above
