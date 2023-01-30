@@ -65,6 +65,14 @@ app.use((req, res, next) => {
     .catch((err) => console.log(err));
 });
 
+// Include some variables on every request
+// This includes CSRF token from csurf that is required for every request to avoid Cross Request Forgery attacks
+app.use((req, res, next) => {
+  res.locals.isAuthenticated = req.session.isLoggedIn;
+  res.locals.csrfToken = req.csrfToken();
+  next();
+});
+
 app.use("/admin", adminRoutes);
 app.use(shopRoutes);
 app.use(authRoutes);
