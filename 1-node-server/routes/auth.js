@@ -13,7 +13,16 @@ router.post("/login", authController.postLogin);
 router.post("/logout", authController.postLogout);
 router.post(
   "/signup",
-  check("email").isEmail().withMessage("Please enter a valid email"),
+  check("email")
+    .isEmail()
+    .withMessage("Please enter a valid email")
+    .custom((value, { req }) => {
+      // Example of a custom validator
+      if (value === "test@test.com") {
+        throw new Error("This email is not allowed");
+      }
+      return true;
+    }),
   authController.postSignup
 );
 router.get("/reset", authController.getReset);
