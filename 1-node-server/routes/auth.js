@@ -9,8 +9,17 @@ const { check, body } = require("express-validator/check");
 const router = express.Router();
 
 router.get("/login", authController.getLogin);
+router.post(
+  "/login",
+  [
+    body("email", "Please provide valid email").isEmail(),
+    body("password", "Wrong password format")
+      .isLength({ min: 5 })
+      .isAlphanumeric(),
+  ],
+  authController.postLogin
+);
 router.get("/signup", authController.getSignup);
-router.post("/login", authController.postLogin);
 router.post("/logout", authController.postLogout);
 router.post(
   "/signup",

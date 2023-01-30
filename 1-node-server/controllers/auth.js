@@ -33,6 +33,14 @@ exports.getSignup = (req, res, next) => {
 
 exports.postLogin = (req, res, next) => {
   const password = req.body.password;
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(422).render("auth/login", {
+      path: "/login",
+      pageTitle: "Login",
+      errorMessage: errors.array()[0].msg,
+    });
+  }
   User.findOne({ email: req.body.email })
     .then((user) => {
       if (!user) {
@@ -88,7 +96,7 @@ exports.postSignup = (req, res, next) => {
     });
   }
 
-  bcrypt
+  return bcrypt
     .hash(password, 12)
     .then((hashedPassword) => {
       const user = new User({
@@ -98,6 +106,9 @@ exports.postSignup = (req, res, next) => {
       });
       console.log("Mock send email");
       return user.save();
+    })
+    .then(result => {
+      res.redirect("/")
     })
     .catch((err) => {
       console.error(err);
