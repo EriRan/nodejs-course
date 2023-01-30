@@ -1,6 +1,7 @@
 const crypto = require("crypto");
 const User = require("../models/user");
 const bcrypt = require("bcryptjs");
+const { validationResult } = require("express-validator/check");
 
 exports.getLogin = (req, res, next) => {
   let message = req.flash("error");
@@ -78,6 +79,14 @@ exports.postSignup = (req, res, next) => {
   const password = req.body.password;
   const confirmPassword = req.body.confirmPassword;
   // TODO: input validation in a separate module
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(422).render("auth/signup", {
+      path: "/signup",
+      pageTitle: "Signup",
+      errorMessage: errors.array()[0].msg,
+    });
+  }
 
   User.findOne({ email: email })
     .then((userDoc) => {
@@ -187,9 +196,9 @@ exports.postNewPassword = (req, res, next) => {
   })
     .then((user) => {
       resetUser = user;
-      return user = bcrypt.hash(newPassword, 12)
+      return (user = bcrypt.hash(newPassword, 12));
     })
-    .then(hashedPassword => {
+    .then((hashedPassword) => {
       resetUser.password = hashedPassword;
       resetUser.resetToken = null;
       resetUser.resetTokenExpiration = undefined;
