@@ -88,30 +88,20 @@ exports.postSignup = (req, res, next) => {
     });
   }
 
-  User.findOne({ email: email })
-    .then((userDoc) => {
-      // If user already exists, redirect back to current page
-      if (userDoc) {
-        req.flash("error", "Email already exists. Please pick another");
-        return res.redirect("/signup");
-      }
-      // Nested promise chain in order to end the promises if we redirect above
-      return bcrypt
-        .hash(password, 12)
-        .then((hashedPassword) => {
-          const user = new User({
-            email: email,
-            password: hashedPassword,
-            cart: { items: [] },
-          });
-          console.log("Mock send email");
-          return user.save();
-        })
-        .catch((err) => {
-          console.error(err);
-        });
+  bcrypt
+    .hash(password, 12)
+    .then((hashedPassword) => {
+      const user = new User({
+        email: email,
+        password: hashedPassword,
+        cart: { items: [] },
+      });
+      console.log("Mock send email");
+      return user.save();
     })
-    .catch((err) => console.error(err));
+    .catch((err) => {
+      console.error(err);
+    });
 };
 
 exports.getReset = (req, res, next) => {
