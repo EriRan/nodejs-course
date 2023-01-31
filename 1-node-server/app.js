@@ -50,7 +50,7 @@ app.use(
     extended: false,
   })
 );
-app.use(multer({storage: fileStorage}).single("image"));
+app.use(multer({dest: "images"}).single("image"));
 app.use(express.static(path.join(__dirname, "public")));
 app.use(
   session({
