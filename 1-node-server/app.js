@@ -27,9 +27,20 @@ const fileStorage = multer.diskStorage({
     cb(null, "images");
   },
   filename: (req, file, cb) => {
-    cb(null, file.filename + "-" + file.originalname);
+    cb(null, Math.round(Math.random() * 1000000000) + "-" + file.originalname);
   },
 });
+const fileFilter = (req, file, cb) => {
+  if (
+    file.mimetype === "image/png" ||
+    file.mimetype === "image/jpg" ||
+    file.mimetype === "image/jpeg"
+  ) {
+    cb(null, true);
+  } else {
+    cb(null, false);
+  }
+};
 
 app.set("view engine", "ejs");
 app.set("views", "views");
@@ -50,7 +61,10 @@ app.use(
     extended: false,
   })
 );
-app.use(multer({ storage: fileStorage }).single("image"));
+// File processing middleware configuration
+app.use(
+  multer({ storage: fileStorage, fileFilter: fileFilter }).single("image")
+);
 app.use(express.static(path.join(__dirname, "public")));
 app.use(
   session({
