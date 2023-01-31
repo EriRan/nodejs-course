@@ -50,21 +50,25 @@ app.use(
   })
 );
 app.use(csrfProtection);
-app.use(flash())
+app.use(flash());
 
 // Middleware to find the same user from mongoDb that is in the current session
 // Session data also comes from MongoDb
 app.use((req, res, next) => {
   if (!req.session.user) {
-    next();
-    return;
+    return next();
   }
   User.findById(req.session.user._id)
     .then((user) => {
+      if (!user) {
+        return next();
+      }
       req.user = user;
       next();
     })
-    .catch((err) => console.log(err));
+    .catch((err) => {
+      throw new Error(err);
+    });
 });
 
 // Include some variables on every request
