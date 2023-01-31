@@ -28,6 +28,11 @@ exports.getSignup = (req, res, next) => {
     path: "/signup",
     pageTitle: "Signup",
     errorMessage: message,
+    oldInput: {
+      email: "",
+      password: "",
+      confirmPassword: "",
+    },
   });
 };
 
@@ -91,6 +96,11 @@ exports.postSignup = (req, res, next) => {
       path: "/signup",
       pageTitle: "Signup",
       errorMessage: errors.array()[0].msg,
+      oldInput: {
+        email: email,
+        password: password,
+        confirmPassword: req.body.confirmPassword,
+      },
     });
   }
 
@@ -105,8 +115,8 @@ exports.postSignup = (req, res, next) => {
       console.log("Mock send email");
       return user.save();
     })
-    .then(result => {
-      res.redirect("/")
+    .then((result) => {
+      res.redirect("/");
     })
     .catch((err) => {
       console.error(err);
