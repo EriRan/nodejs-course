@@ -52,6 +52,14 @@ app.use(
 app.use(csrfProtection);
 app.use(flash());
 
+// Include some variables on every request
+// This includes CSRF token from csurf that is required for every request to avoid Cross Request Forgery attacks
+app.use((req, res, next) => {
+  res.locals.isAuthenticated = req.session.isLoggedIn;
+  res.locals.csrfToken = req.csrfToken();
+  next();
+});
+
 // Middleware to find the same user from mongoDb that is in the current session
 // Session data also comes from MongoDb
 app.use((req, res, next) => {
@@ -67,17 +75,11 @@ app.use((req, res, next) => {
       next();
     })
     .catch((err) => {
-      throw new Error(err);
+      // Always wrap errors inside next. Otherwise they will not pass to the error handling middlewares
+      next(new Error(err))
     });
 });
 
-// Include some variables on every request
-// This includes CSRF token from csurf that is required for every request to avoid Cross Request Forgery attacks
-app.use((req, res, next) => {
-  res.locals.isAuthenticated = req.session.isLoggedIn;
-  res.locals.csrfToken = req.csrfToken();
-  next();
-});
 
 app.use("/admin", adminRoutes);
 app.use(shopRoutes);
