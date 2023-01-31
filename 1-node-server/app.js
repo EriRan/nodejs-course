@@ -87,6 +87,11 @@ app.get("/500", errorController.get500);
 
 app.use(errorController.get404);
 
+// Special error handling middleware
+app.use((error, req, res, next) => {
+  res.redirect("/500");
+})
+
 mongoose
   .connect(mongodbUrl)
   .then((result) => {
