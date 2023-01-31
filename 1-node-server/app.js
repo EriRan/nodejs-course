@@ -27,8 +27,8 @@ const fileStorage = multer.diskStorage({
     cb(null, "images");
   },
   filename: (req, file, cb) => {
-    cb(null, new Date().toISOString() + "-" + file.originalname);
-  }
+    cb(null, file.filename + "-" + file.originalname);
+  },
 });
 
 app.set("view engine", "ejs");
@@ -50,7 +50,7 @@ app.use(
     extended: false,
   })
 );
-app.use(multer({dest: "images"}).single("image"));
+app.use(multer({ storage: fileStorage }).single("image"));
 app.use(express.static(path.join(__dirname, "public")));
 app.use(
   session({
