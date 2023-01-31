@@ -1,5 +1,7 @@
 const { validationResult } = require("express-validator/check");
 
+const mongoose = require("mongoose");
+
 const Product = require("../models/product");
 
 exports.getAddProduct = (req, res, next) => {
@@ -49,7 +51,21 @@ exports.postAddProduct = (req, res, next) => {
       res.redirect("/admin/products");
     })
     .catch((err) => {
-      console.log(err);
+      console.error(err);
+      return res.status(500).render("admin/edit-product", {
+        pageTitle: "Add Product",
+        path: "/admin/add-product",
+        editing: false,
+        hasError: true,
+        product: {
+          title: title,
+          imageUrl: imageUrl,
+          price: price,
+          description: description,
+        },
+        errorMessage: "Database operation failed. Please try again",
+        validationErrors: [],
+      });
     });
 };
 
