@@ -101,6 +101,7 @@ app.use(errorController.get404);
 
 // Special error handling middleware
 app.use((error, req, res, next) => {
+  console.error(error);
   res.redirect("/500");
 });
 
