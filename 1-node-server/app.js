@@ -2,6 +2,7 @@ const path = require("path");
 
 const express = require("express");
 const bodyParser = require("body-parser");
+const multer = require("multer");
 const mongoose = require("mongoose");
 const session = require("express-session");
 const MongoDBStore = require("connect-mongodb-session")(session);
@@ -40,6 +41,7 @@ app.use(
     extended: false,
   })
 );
+app.use(multer({dest: "images"}).single("image"));
 app.use(express.static(path.join(__dirname, "public")));
 app.use(
   session({
@@ -76,10 +78,9 @@ app.use((req, res, next) => {
     })
     .catch((err) => {
       // Always wrap errors inside next. Otherwise they will not pass to the error handling middlewares
-      next(new Error(err))
+      next(new Error(err));
     });
 });
-
 
 app.use("/admin", adminRoutes);
 app.use(shopRoutes);
@@ -92,7 +93,7 @@ app.use(errorController.get404);
 // Special error handling middleware
 app.use((error, req, res, next) => {
   res.redirect("/500");
-})
+});
 
 mongoose
   .connect(mongodbUrl)
