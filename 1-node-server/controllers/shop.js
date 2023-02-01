@@ -7,12 +7,40 @@ const PDFDocument = require("pdfkit");
 const ITEMS_PER_PAGE = 1;
 
 exports.getProducts = (req, res, next) => {
-  Product.find()
+  // Some kind of OR operation? Pick the value that is truthy
+  const page = +req.query.page || 1;
+  let totalItems = 0;
+
+  // Get the amount of documents
+  Product.countDocuments()
+    .then((count) => {
+      totalItems = count;
+      return (
+        Product.find()
+          // Pagination with MongoDb queries skip and limit
+          // Get the starting point of products
+          .skip((page - 1) * ITEMS_PER_PAGE)
+          // Cut off the remaining products after the limit
+          .limit(ITEMS_PER_PAGE)
+      );
+    })
+    .catch((err) => {
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+      return next(error);
+    })
     .then((products) => {
       res.render("shop/product-list", {
         prods: products,
-        pageTitle: "All Products",
+        pageTitle: "Products",
         path: "/products",
+        currentPage: page,
+        totalProducts: totalItems,
+        hasNextPage: ITEMS_PER_PAGE * page < totalItems,
+        hasPreviousPage: page > 1,
+        nextPage: page + 1,
+        previousPage: page - 1,
+        lastPage: Math.ceil(totalItems / ITEMS_PER_PAGE),
       });
     })
     .catch((err) => {
