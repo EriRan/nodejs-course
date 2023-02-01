@@ -238,7 +238,26 @@ form {
 .user-message--error {
   border-color: rgb(247, 35, 35);
   background: rgb(179, 10, 10);
-  color: rgb(87, 9, 9)
+  color: rgb(87, 9, 9);
+}
+
+.pagination {
+  margin-top: 2rem;
+  text-align: center;
+}
+
+.pagination a {
+  text-decoration: none;
+  color: #00695c;
+  padding: 0.5rem;
+  border: 1px solid #00695c;
+  margin: 0 1rem;
+}
+
+.pagination a:hover,
+.pagination a:active {
+  background: #00695c;
+  color: white;
 }
 
 @media (min-width: 768px) {
