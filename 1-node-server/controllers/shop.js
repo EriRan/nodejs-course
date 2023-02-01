@@ -161,6 +161,34 @@ exports.postCartDeleteProduct = (req, res, next) => {
     });
 };
 
+exports.getCheckout = (req, res, next) => {
+  req.user
+    .populate("cart.items.productId")
+    .then((user) => {
+      if (!user) {
+        const error = new Error("User not found");
+        error.httpStatusCode = 500;
+        next(error);
+      }
+      const products = user.cart.items;
+      let total = 0;
+      products.forEach((product) => {
+        total += product.quantity * product.productId.price;
+      });
+      return res.render("shop/checkout", {
+        path: "/checkout",
+        pageTitle: "Checkout",
+        products: products,
+        totalSum: total,
+      });
+    })
+    .catch((err) => {
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+      return next(error);
+    });
+};
+
 exports.postOrder = (req, res, next) => {
   req.user
     .populate("cart.items.productId")
