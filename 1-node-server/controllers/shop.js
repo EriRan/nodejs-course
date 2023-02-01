@@ -2,6 +2,7 @@ const Product = require("../models/product");
 const Order = require("../models/order");
 const fs = require("fs");
 const path = require("path");
+const PDFDocument = require("pdfkit");
 
 exports.getProducts = (req, res, next) => {
   Product.find()
@@ -168,13 +169,37 @@ exports.getInvoice = (req, res, next) => {
       }
       const invoiceName = "invoice-" + orderId + ".pdf";
       const invoicePath = path.join("data", "invoices", invoiceName);
-      // Stream file
-      // Data will be downloaded by the browser step by step
-      // This is better for server memory consumption
-      const file = fs.createReadStream(invoicePath);
+
+      // Create a new PDF
+      const pdfDoc = new PDFDocument();
       res.setHeader("Content-Type", "application/pdf");
       res.setHeader("Content-Disposition", "inline; filename=" + invoiceName);
-      file.pipe(res);
+
+      pdfDoc.pipe(fs.createWriteStream(invoicePath));
+      pdfDoc.pipe(res);
+
+      pdfDoc.fontSize(26).text("Invoice", {
+        underline: true,
+      });
+      let totalPrice = 0;
+      pdfDoc.text("-------------------------");
+      order.products.forEach((prod) => {
+        totalPrice += prod.quantity * prod.product.price;
+        pdfDoc
+          .fontSize(14)
+          .text(
+            prod.product.title +
+              " - " +
+              prod.quantity +
+              " x " +
+              "€" +
+              prod.product.price
+          );
+      });
+      pdfDoc.fontSize(20).text("-------------------------");
+      pdfDoc.text("Total price: €" + totalPrice);
+
+      pdfDoc.end();
     })
     .catch((err) => next(err));
 };
