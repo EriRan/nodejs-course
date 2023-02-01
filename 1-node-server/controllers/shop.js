@@ -163,7 +163,7 @@ exports.postCartDeleteProduct = (req, res, next) => {
 };
 
 exports.getCheckout = (req, res, next) => {
-  let product;
+  let products;
   let total = 0;
   req.user
     .populate("cart.items.productId")
@@ -203,6 +203,7 @@ exports.getCheckout = (req, res, next) => {
       });
     })
     .then((session) => {
+      console.log(session);
       return res.render("shop/checkout", {
         path: "/checkout",
         pageTitle: "Checkout",
