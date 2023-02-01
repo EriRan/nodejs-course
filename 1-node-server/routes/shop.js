@@ -21,7 +21,11 @@ router.post('/cart-delete-item', isAuth, shopController.postCartDeleteProduct);
 
 router.get('/checkout', isAuth, shopController.getCheckout);
 
-router.get('/checkout/success', isAuth, shopController.postOrder);
+// Success page should be handled by Stripe because with this approach anyone can call this URL to create a new order
+// Webhooks seemed to be the recommended approact
+// https://stripe.com/docs/payments/after-the-payment
+// https://stripe.com/docs/payments/checkout/fulfill-orders
+router.get('/checkout/success', isAuth, shopController.getChecoutSuccess);
 
 router.get('/checkout/cancel', isAuth, shopController.getCheckout);
 
