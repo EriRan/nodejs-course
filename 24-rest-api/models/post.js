@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 
 const Schema = mongoose.Schema;
 
-export const postSchema = mongoose.model(
+export const Post = mongoose.model(
   "Post",
   new Schema(
     {

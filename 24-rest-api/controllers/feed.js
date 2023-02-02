@@ -1,4 +1,5 @@
 import { validationResult } from "express-validator";
+import { Post } from "../models/post.js";
 
 export function getPosts(req, res, next) {
   // No more rendering at REST API
@@ -22,23 +23,29 @@ export function getPosts(req, res, next) {
 export function createPost(req, res, next) {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-    return res
-      .status(422)
-      .json({ message: "Validation failed, entered data is incorrect", errors: errors.array() });
+    return res.status(422).json({
+      message: "Validation failed, entered data is incorrect",
+      errors: errors.array(),
+    });
   }
   const title = req.body.title;
   const content = req.body.content;
-  // 201 Resource was created
-  res.status(201).json({
-    message: "Post created successfully",
-    post: {
-      _id: Math.round(Math.random() * 1000000000),
-      title: title,
-      content: content,
-      creator: {
-        name: "Mold-Max",
-      },
-      createdAt: new Date(),
+  const post = new Post({
+    title: title,
+    content: content,
+    imageUrl: "images/7.jpg",
+    creator: {
+      name: "Mold-Max",
     },
   });
+  post
+    .save()
+    .then((result) => {
+      res.status(201).json({
+        message: "Post created!",
+        post: result,
+      });
+    })
+    .catch((err) => console.error(err));
+  // 201 Resource was created
 }
