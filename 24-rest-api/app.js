@@ -22,10 +22,6 @@ app.use((req, res, next) => {
 app.use("/feed", feedRoutes);
 
 const mongodbUrl = `mongodb+srv://${process.env.mongodb_user}:${process.env.mongodb_password}@${process.env.mongodb_cluster_address}/messages`;
-const store = new MongoDBStore({
-  uri: mongodbUrl,
-  collection: "sessions",
-});
 
 mongoose
   .connect(mongodbUrl)
