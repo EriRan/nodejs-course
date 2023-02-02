@@ -1,3 +1,5 @@
+import { validationResult } from "express-validator";
+
 export function getPosts(req, res, next) {
   // No more rendering at REST API
   // Status is more important now when the client does the rendering and it needs to react to the data received
@@ -18,6 +20,12 @@ export function getPosts(req, res, next) {
 }
 
 export function createPost(req, res, next) {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res
+      .status(422)
+      .json({ message: "Validation failed, entered data is incorrect", errors: errors.array() });
+  }
   const title = req.body.title;
   const content = req.body.content;
   // 201 Resource was created
