@@ -6,6 +6,6 @@ const router = express.Router();
 router.get("/posts", getPosts);
 
 // POST /feed/post
-router.post("/posts", createPost);
+router.post("/post", createPost);
 
 export default router;
