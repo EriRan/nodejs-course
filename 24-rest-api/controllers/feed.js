@@ -5,3 +5,18 @@ export function getPosts(req, res, next) {
     posts: [{ title: "First post", content: "This is a first post" }],
   });
 }
+
+export function createPost(req, res, next) {
+  console.log(req.body);
+  const title = req.body.title;
+  const content = req.body.content;
+  // 201 Resource was created
+  res.status(201).json({
+    message: "Post created successfully",
+    post: {
+      id: Math.round(Math.random() * 1000000000),
+      title: title,
+      content: content,
+    },
+  });
+}
