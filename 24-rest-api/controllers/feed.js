@@ -18,16 +18,19 @@ export function getPosts(req, res, next) {
 }
 
 export function createPost(req, res, next) {
-  console.log(req.body);
   const title = req.body.title;
   const content = req.body.content;
   // 201 Resource was created
   res.status(201).json({
     message: "Post created successfully",
     post: {
-      id: Math.round(Math.random() * 1000000000),
+      _id: Math.round(Math.random() * 1000000000),
       title: title,
       content: content,
+      creator: {
+        name: "Mold-Max",
+      },
+      createdAt: new Date(),
     },
   });
 }
