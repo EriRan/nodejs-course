@@ -19,7 +19,7 @@ export const User = mongoose.model(
     },
     status: {
       type: String,
-      required: true,
+      default: "I am new"
     },
     post: [
       {
