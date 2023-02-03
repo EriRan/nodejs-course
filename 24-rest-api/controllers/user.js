@@ -34,6 +34,12 @@ export function getStatus(req, res, next) {
  * Put a new status for currently logged in user
  */
 export function putStatus(req, res, next) {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    const error = new Error("Validation failed, entered data is incorrect");
+    error.statusCode = 422;
+    throw error;
+  }
   User.findOne({ _id: req.userId })
     .then((user) => {
       if (!user) {
