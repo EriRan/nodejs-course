@@ -7,10 +7,11 @@ import {
   updatePost,
 } from "../controllers/feed.js";
 import { body } from "express-validator";
+import isAuth from "../middleware/is-auth.js"
 
 const router = express.Router();
 
-router.get("/posts", getPosts);
+router.get("/posts", isAuth, getPosts);
 
 // POST /feed/post
 router.post(
