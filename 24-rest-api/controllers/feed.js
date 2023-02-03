@@ -9,9 +9,26 @@ import { dirname } from "path";
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
 export function getPosts(req, res, next) {
+  // || === OR syntax
+  const currentPage = req.query.page || 1;
+  const perPage = 2;
+  let totalItems;
   Post.find()
+    .countDocuments()
+    .then((count) => {
+      totalItems = count;
+      return Post.find()
+        .skip((currentPage - 1) * perPage)
+        .limit(perPage);
+    })
     .then((posts) => {
-      res.status(200).json({ message: "Posts fetched", posts: posts });
+      res
+        .status(200)
+        .json({
+          message: "Posts fetched",
+          posts: posts,
+          totalItems: totalItems,
+        });
     })
     .catch((err) => {
       if (!err.statuscode) {
@@ -144,7 +161,7 @@ export function deletePost(req, res, next) {
       clearImage(post.imageUrl);
       return Post.findByIdAndRemove(post._id);
     })
-    .then(result => {
+    .then((result) => {
       res.status(200).json({ message: "Post deleted", post: result });
     })
     .catch((err) => {
