@@ -1,6 +1,7 @@
 import express from "express";
 import feedRoutes from "./routes/feed.js";
 import authRoutes from "./routes/auth.js";
+import userRoutes from "./routes/user.js";
 import bodyParser from "body-parser";
 import dotenv from "dotenv";
 import mongoose from "mongoose";
@@ -63,6 +64,7 @@ app.use((req, res, next) => {
 
 app.use("/feed", feedRoutes);
 app.use("/auth", authRoutes);
+app.use("/user", userRoutes);
 
 // Error handling middleware
 app.use((error, req, res, next) => {
