@@ -14,3 +14,6 @@ Example of .env file content:
 mongodb_user = user
 mongodb_password = password123
 mongodb_cluster_address = cluster0.asdasdasda.mongodb.net
+express_session_secret = afafsdsfsdfsdfsdsdfsfsd
+stripe_api_key = pk_test_dfsdfsdfsdfsdfsdfsdfsdfsdfsfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsfsfsdfsdfsdfsdsdfsdfsdfsdsdfsdfsdfdsfds
+stripe_secret_key = sk_test_sdffölodsofhodihoisduhfosidufhsidfhusoidfuhsiodfuhsdiohusdiufhosduhosdiusdhosuhdfiosuhfsidfuhsidu
