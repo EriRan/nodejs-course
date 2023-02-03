@@ -3,6 +3,7 @@ import feedRoutes from "./routes/feed.js";
 import bodyParser from "body-parser";
 import dotenv from "dotenv";
 import mongoose from "mongoose";
+import multer from "multer";
 import path from "path";
 import { fileURLToPath } from "url";
 import { dirname } from "path";
@@ -12,10 +13,39 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 
 const app = express();
 
+const fileStorage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, "images");
+  },
+  filename: (req, file, cb) => {
+    cb(null, Math.round(Math.random() * 1000000000) + "-" + file.originalname);
+  },
+});
+
+const fileFilter = (req, file, cb) => {
+  if (
+    file.mimetype === "image/png" ||
+    file.mimetype === "image/jpg" ||
+    file.mimetype === "image/jpeg"
+  ) {
+    cb(null, true);
+  } else {
+    cb(null, false);
+  }
+};
+
 dotenv.config();
 
 // Configuration must be added before routes!!!
 app.use(bodyParser.json()); // application/json
+
+// Multer
+app.use(
+  multer({
+    storage: fileStorage,
+    fileFilter: fileFilter,
+  }).single("image")
+);
 
 app.use("/images", express.static(path.join(__dirname, "images")));
 
