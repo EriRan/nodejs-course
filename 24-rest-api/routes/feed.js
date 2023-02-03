@@ -1,5 +1,6 @@
 import express from "express";
 import {
+  deletePost,
   getPost,
   getPosts,
   createPost,
@@ -31,5 +32,7 @@ router.put(
   ],
   updatePost
 );
+
+router.delete("/post/:postId", deletePost);
 
 export default router;

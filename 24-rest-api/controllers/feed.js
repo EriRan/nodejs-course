@@ -130,6 +130,31 @@ export function updatePost(req, res, next) {
     });
 }
 
+export function deletePost(req, res, next) {
+  const postId = req.params.postId;
+
+  Post.findById(postId)
+    .then((post) => {
+      // TODO: check logged in user
+      if (!post) {
+        const error = new Error("Post not found");
+        error.statusCode = 404;
+        throw error;
+      }
+      clearImage(post.imageUrl);
+      return Post.findByIdAndRemove(post._id);
+    })
+    .then(result => {
+      res.status(200).json({ message: "Post deleted", post: result });
+    })
+    .catch((err) => {
+      if (!err.statusCode) {
+        err.statusCode = 500;
+      }
+      next(err);
+    });
+}
+
 const clearImage = (filePath) => {
   filePath = path.join(__dirname, "..", filePath);
   fs.unlink(filePath, (err) => {
