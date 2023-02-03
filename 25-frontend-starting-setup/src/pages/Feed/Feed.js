@@ -87,7 +87,7 @@ class Feed extends Component {
       body: JSON.stringify({status: this.state.status}),
       headers: {
         "Content-Type": "Application/json",
-        Authorization: "Bearer " + this.props.token, // JWT token set to headers
+        "Authorization": "Bearer " + this.props.token, // JWT token set to headers
       },
     })
       .then((res) => {
