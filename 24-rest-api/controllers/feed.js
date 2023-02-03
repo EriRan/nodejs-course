@@ -9,32 +9,27 @@ import { User } from "../models/user.js";
 // ES6 style of getting __dirname
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
-export function getPosts(req, res, next) {
-  // || === OR syntax
+export async function getPosts(req, res, next) {
+  // NICE
   const currentPage = req.query.page || 1;
   const perPage = 2;
   let totalItems;
-  Post.find()
-    .countDocuments()
-    .then((count) => {
-      totalItems = count;
-      return Post.find()
-        .skip((currentPage - 1) * perPage)
-        .limit(perPage);
-    })
-    .then((posts) => {
-      res.status(200).json({
-        message: "Posts fetched",
-        posts: posts,
-        totalItems: totalItems,
-      });
-    })
-    .catch((err) => {
-      if (!err.statuscode) {
-        err.statusCode = 500;
-      }
-      next(err);
+  try {
+    totalItems = await Post.find().countDocuments();
+    const posts = await Post.find()
+      .skip((currentPage - 1) * perPage)
+      .limit(perPage);
+    res.status(200).json({
+      message: "Posts fetched",
+      posts: posts,
+      totalItems: totalItems,
     });
+  } catch {
+    if (!err.statuscode) {
+      err.statusCode = 500;
+    }
+    next(err);
+  }
 }
 
 export function createPost(req, res, next) {
@@ -187,7 +182,7 @@ export function deletePost(req, res, next) {
       return Post.findByIdAndRemove(post._id);
     })
     .then((result) => {
-      return User.findById(req.userId)
+      return User.findById(req.userId);
     })
     .then((user) => {
       user.posts.pull(postId);
