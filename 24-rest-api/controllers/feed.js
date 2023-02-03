@@ -140,6 +140,13 @@ export function updatePost(req, res, next) {
         // This error will be caught in the next catch and then passed to the error middleware with next()
         throw error;
       }
+      // Confirm user has the rights to modify a post
+      if (post.creator.toString() !== req.userId) {
+        const error = new Error("Not authorized");
+        error.statusCode = 403;
+        // This error will be caught in the next catch and then passed to the error middleware with next()
+        throw error;
+      }
       if (imageUrl !== post.imageUrl) {
         clearImage(post.imageUrl);
       }
@@ -168,6 +175,12 @@ export function deletePost(req, res, next) {
       if (!post) {
         const error = new Error("Post not found");
         error.statusCode = 404;
+        throw error;
+      }
+      if (post.creator.toString() !== req.userId) {
+        const error = new Error("Not authorized");
+        error.statusCode = 403;
+        // This error will be caught in the next catch and then passed to the error middleware with next()
         throw error;
       }
       clearImage(post.imageUrl);
