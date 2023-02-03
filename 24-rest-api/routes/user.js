@@ -9,7 +9,10 @@ router.get("/status", isAuth, getStatus);
 router.put(
   "/status",
   isAuth,
-  [body("status").trim().isLength({ max: 300 })],
+  [
+    body("status").trim().not().isEmpty(),
+    body("status").trim().isLength({ max: 300 }),
+  ],
   putStatus
 );
 

@@ -34,6 +34,7 @@ export function getStatus(req, res, next) {
  * Put a new status for currently logged in user
  */
 export function putStatus(req, res, next) {
+  console.log(req.body);
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     const error = new Error("Validation failed, entered data is incorrect");
@@ -47,6 +48,7 @@ export function putStatus(req, res, next) {
         error.statusCode = 404;
         throw error;
       }
+      
       user.status = req.body.status;
       return user.save();
     })

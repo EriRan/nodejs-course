@@ -82,12 +82,11 @@ class Feed extends Component {
 
   statusUpdateHandler = (event) => {
     event.preventDefault();
-    const formData = new FormData();
-    formData.append("status", this.state.status);
     fetch("http://localhost:8080/user/status", {
       method: "PUT",
-      body: formData,
+      body: JSON.stringify({status: this.state.status}),
       headers: {
+        "Content-Type": "Application/json",
         Authorization: "Bearer " + this.props.token, // JWT token set to headers
       },
     })
