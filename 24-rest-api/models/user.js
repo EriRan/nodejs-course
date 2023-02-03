@@ -21,7 +21,7 @@ export const User = mongoose.model(
       type: String,
       default: "I am new"
     },
-    post: [
+    posts: [
       {
         type: Schema.Types.ObjectId,
         ref: "Post",

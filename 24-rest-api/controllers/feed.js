@@ -4,6 +4,7 @@ import { validationResult } from "express-validator";
 import { Post } from "../models/post.js";
 import { fileURLToPath } from "url";
 import { dirname } from "path";
+import { User } from "../models/user.js";
 
 // ES6 style of getting __dirname
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -22,13 +23,11 @@ export function getPosts(req, res, next) {
         .limit(perPage);
     })
     .then((posts) => {
-      res
-        .status(200)
-        .json({
-          message: "Posts fetched",
-          posts: posts,
-          totalItems: totalItems,
-        });
+      res.status(200).json({
+        message: "Posts fetched",
+        posts: posts,
+        totalItems: totalItems,
+      });
     })
     .catch((err) => {
       if (!err.statuscode) {
@@ -53,20 +52,33 @@ export function createPost(req, res, next) {
   const imageUrl = req.file.path.replace("\\", "/");
   const title = req.body.title;
   const content = req.body.content;
+  let creator;
+  let newPost;
   const post = new Post({
     title: title,
     content: content,
     imageUrl: imageUrl,
-    creator: {
-      name: "Mold-Max",
-    },
+    creator: req.userId,
   });
   post
     .save()
     .then((result) => {
+      newPost = result;
+      return User.findById(req.userId);
+    })
+    .then((user) => {
+      creator = user;
+      user.posts.push(post);
+      return user.save();
+    })
+    .then((result) => {
       res.status(201).json({
         message: "Post created!",
-        post: result,
+        post: newPost,
+        creator: {
+          _id: creator._id,
+          name: creator.name,
+        },
       });
     })
     .catch((err) => {
