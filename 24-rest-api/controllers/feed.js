@@ -46,7 +46,6 @@ export async function createPost(req, res, next) {
   const imageUrl = req.file.path.replace("\\", "/");
   const title = req.body.title;
   const content = req.body.content;
-  let creator;
   const post = new Post({
     title: title,
     content: content,

@@ -37,7 +37,6 @@ export async function signup(req, res, next) {
 
 export async function login(req, res, next) {
   const email = req.body.email;
-  const password = req.body.password;
   let loadedUser;
 
   try {
@@ -47,7 +46,6 @@ export async function login(req, res, next) {
       error.statusCode = 401;
       throw error;
     }
-    loadedUser = user;
     const isEqual = bcrypt.compare(password, user.password);
     if (!isEqual) {
       const error = new Error("Wrong password!");
@@ -57,8 +55,8 @@ export async function login(req, res, next) {
     // Create signed JWT token
     const token = jwt.sign(
       {
-        email: loadedUser.email,
-        userId: loadedUser._id.toString(),
+        email: user.email,
+        userId: user._id.toString(),
       },
       process.env.jwt_secret,
       {
@@ -66,7 +64,7 @@ export async function login(req, res, next) {
       }
     );
     // Return the token
-    res.status(200).json({ token: token, userId: loadedUser._id.toString() });
+    res.status(200).json({ token: token, userId: user._id.toString() });
   } catch (err) {
     if (!err.statuscode) {
       err.statusCode = 500;
