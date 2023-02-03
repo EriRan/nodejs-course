@@ -13,9 +13,8 @@ export async function getPosts(req, res, next) {
   // NICE
   const currentPage = req.query.page || 1;
   const perPage = 2;
-  let totalItems;
   try {
-    totalItems = await Post.find().countDocuments();
+    const totalItems = await Post.find().countDocuments();
     const posts = await Post.find()
       .skip((currentPage - 1) * perPage)
       .limit(perPage);
@@ -24,7 +23,7 @@ export async function getPosts(req, res, next) {
       posts: posts,
       totalItems: totalItems,
     });
-  } catch {
+  } catch (err) {
     if (!err.statuscode) {
       err.statusCode = 500;
     }
@@ -32,7 +31,7 @@ export async function getPosts(req, res, next) {
   }
 }
 
-export function createPost(req, res, next) {
+export async function createPost(req, res, next) {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     const error = new Error("Validation failed, entered data is incorrect");
@@ -48,64 +47,54 @@ export function createPost(req, res, next) {
   const title = req.body.title;
   const content = req.body.content;
   let creator;
-  let newPost;
   const post = new Post({
     title: title,
     content: content,
     imageUrl: imageUrl,
     creator: req.userId,
   });
-  post
-    .save()
-    .then((result) => {
-      newPost = result;
-      return User.findById(req.userId);
-    })
-    .then((user) => {
-      creator = user;
-      user.posts.push(post);
-      return user.save();
-    })
-    .then((result) => {
-      res.status(201).json({
-        message: "Post created!",
-        post: newPost,
-        creator: {
-          _id: creator._id,
-          name: creator.name,
-        },
-      });
-    })
-    .catch((err) => {
-      if (!err.statuscode) {
-        err.statusCode = 500;
-      }
-      next(err);
+  try {
+    const newPost = await post.save();
+    const user = await User.findById(req.userId);
+    user.posts.push(post);
+    const savedUser = await user.save();
+    res.status(201).json({
+      message: "Post created!",
+      post: newPost,
+      creator: {
+        _id: savedUser._id,
+        name: savedUser.name,
+      },
     });
+  } catch (err) {
+    if (!err.statuscode) {
+      err.statusCode = 500;
+    }
+    next(err);
+  }
 }
 
-export function getPost(req, res, next) {
+export async function getPost(req, res, next) {
   const postId = req.params.postId;
 
-  Post.findById(postId)
-    .then((post) => {
-      if (!post) {
-        const error = new Error("Post not found");
-        error.statusCode = 404;
-        // This error will be caught in the next catch and then passed to the error middleware with next()
-        throw error;
-      }
-      res.status(200).json({ message: "Post fetched", post: post });
-    })
-    .catch((err) => {
-      if (!err.statusCode) {
-        err.statusCode = 500;
-      }
-      next(err);
-    });
+  try {
+    const post = await Post.findById(postId);
+    if (!post) {
+      const error = new Error("Post not found");
+      error.statusCode = 404;
+      // This error will be caught in the next catch and then passed to the error middleware with next()
+      throw error;
+    }
+    res.status(200).json({ message: "Post fetched", post: post });
+  } catch (err) {
+    if (!err.statuscode) {
+      err.statusCode = 500;
+    }
+    next(err);
+  }
 }
 
-export function updatePost(req, res, next) {
+export async function updatePost(req, res, next) {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     const error = new Error("Validation failed, entered data is incorrect");
@@ -127,76 +116,65 @@ export function updatePost(req, res, next) {
   }
 
   // Finally do the actual update
-  Post.findById(postId)
-    .then((post) => {
-      if (!post) {
-        const error = new Error("Post not found");
-        error.statusCode = 404;
-        // This error will be caught in the next catch and then passed to the error middleware with next()
-        throw error;
-      }
-      // Confirm user has the rights to modify a post
-      if (post.creator.toString() !== req.userId) {
-        const error = new Error("Not authorized");
-        error.statusCode = 403;
-        // This error will be caught in the next catch and then passed to the error middleware with next()
-        throw error;
-      }
-      if (imageUrl !== post.imageUrl) {
-        clearImage(post.imageUrl);
-      }
-      post.title = title;
-      post.content = content;
-      post.imageUrl = imageUrl;
-      return post.save();
-    })
-    .then((result) => {
-      res.status(200).json({ message: "Post updated!", post: result });
-    })
-    .catch((err) => {
-      if (!err.statusCode) {
-        err.statusCode = 500;
-      }
-      next(err);
-    });
+  try {
+    const post = await Post.findById(postId);
+    if (!post) {
+      const error = new Error("Post not found");
+      error.statusCode = 404;
+      // This error will be caught in the next catch and then passed to the error middleware with next()
+      throw error;
+    }
+    // Confirm user has the rights to modify a post
+    if (post.creator.toString() !== req.userId) {
+      const error = new Error("Not authorized");
+      error.statusCode = 403;
+      // This error will be caught in the next catch and then passed to the error middleware with next()
+      throw error;
+    }
+    if (imageUrl !== post.imageUrl) {
+      clearImage(post.imageUrl);
+    }
+    post.title = title;
+    post.content = content;
+    post.imageUrl = imageUrl;
+    const savedPost = await post.save();
+    res.status(200).json({ message: "Post updated!", post: savedPost });
+  } catch (err) {
+    if (!err.statuscode) {
+      err.statusCode = 500;
+    }
+    next(err);
+  }
 }
 
-export function deletePost(req, res, next) {
+export async function deletePost(req, res, next) {
   const postId = req.params.postId;
 
-  Post.findById(postId)
-    .then((post) => {
-      // TODO: check logged in user
-      if (!post) {
-        const error = new Error("Post not found");
-        error.statusCode = 404;
-        throw error;
-      }
-      if (post.creator.toString() !== req.userId) {
-        const error = new Error("Not authorized");
-        error.statusCode = 403;
-        // This error will be caught in the next catch and then passed to the error middleware with next()
-        throw error;
-      }
-      clearImage(post.imageUrl);
-      return Post.findByIdAndRemove(post._id);
-    })
-    .then((result) => {
-      return User.findById(req.userId);
-    })
-    .then((user) => {
-      user.posts.pull(postId);
-      return user.save();
-    })
-    .then((result) => {
-      res.status(200).json({ message: "Post deleted", post: result });
-    })
-    .catch((err) => {
-      if (!err.statusCode) {
-        err.statusCode = 500;
-      }
-      next(err);
-    });
+  try {
+    const post = await Post.findById(postId);
+    if (!post) {
+      const error = new Error("Post not found");
+      error.statusCode = 404;
+      throw error;
+    }
+    if (post.creator.toString() !== req.userId) {
+      const error = new Error("Not authorized");
+      error.statusCode = 403;
+      // This error will be caught in the next catch and then passed to the error middleware with next()
+      throw error;
+    }
+    clearImage(post.imageUrl);
+    await Post.findByIdAndRemove(post._id);
+    const user = await User.findById(req.userId);
+    user.posts.pull(postId);
+    const savedUser = await user.save();
+    res.status(200).json({ message: "Post deleted", post: savedUser });
+  } catch (err) {
+    if (!err.statuscode) {
+      err.statusCode = 500;
+    }
+    next(err);
+  }
 }
 
 const clearImage = (filePath) => {
