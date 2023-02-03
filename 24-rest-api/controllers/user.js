@@ -7,8 +7,10 @@ import { User } from "../models/user.js";
 // ES6 style of getting __dirname
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
+/**
+ * Get status of currently logged in user
+ */
 export function getStatus(req, res, next) {
-  // This is how to get the userId from a JWT?
   User.findOne({ _id: req.userId })
     .then((user) => {
       if (!user) {
@@ -28,8 +30,10 @@ export function getStatus(req, res, next) {
     });
 }
 
+/**
+ * Put a new status for currently logged in user
+ */
 export function putStatus(req, res, next) {
-  // This is how to get the userId from a JWT?
   User.findOne({ _id: req.userId })
     .then((user) => {
       if (!user) {
@@ -37,7 +41,6 @@ export function putStatus(req, res, next) {
         error.statusCode = 404;
         throw error;
       }
-      console.log(req.body.status);
       user.status = req.body.status;
       return user.save();
     })
