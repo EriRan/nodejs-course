@@ -9,6 +9,7 @@ import multer from "multer";
 import path from "path";
 import { fileURLToPath } from "url";
 import { dirname } from "path";
+import { Server } from "socket.io";
 
 // ES6 style of getting __dirname
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -84,7 +85,17 @@ mongoose
   .connect(mongodbUrl)
   .then((result) => {
     // Different port this time because frontend application uses port 3000
-    app.listen(8080);
+    const server = app.listen(8080);
+    // Setup Socket.io
+    const io = new Server(server, {
+      cors: {
+        origin: "http://localhost:3000",
+        methods: ["GET", "POST"],
+      },
+    });
+    io.on("connection", (socket) => {
+      console.log("a user connected");
+    });
   })
   .catch((err) => {
     console.log(err);
