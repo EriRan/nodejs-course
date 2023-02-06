@@ -66,6 +66,7 @@ class Feed extends Component {
               creator {
                 name
               }
+              imageUrl
             } 
           totalPosts
           }
@@ -147,29 +148,50 @@ class Feed extends Component {
       editLoading: true,
     });
 
-    let graphqlQuery = {
-      query: `
-        mutation {
-          createPost(postInput: {title: "${postData.title}", content: "${postData.content}", imageUrl: "placeholderURL"}) {
-            _id
-            title
-            content
-            imageUrl
-            creator { name }
-            createdAt
-          }
-        }
-      `,
-    };
+    // Javascript built in object
+    // Will automatically set up some headers like content type
+    const formData = new FormData();
+    formData.append("image", postData.image);
 
-    fetch("http://localhost:8080/graphql", {
-      method: "POST",
-      body: JSON.stringify(graphqlQuery),
+    if (this.state.editPost) {
+      formData.append("oldPath", this.state.editPost.imagePath);
+    }
+    // First request attempts to add a new image
+    fetch("http://localhost:8080/post-image", {
+      method: "PUT",
       headers: {
-        Authorization: "Bearer " + this.props.token, // JWT token set to headers
-        "Content-Type": "application/json",
+        Authorization: "Bearer " + this.props.token,
       },
+      body: formData,
     })
+      .then((res) => res.json())
+      .then((fileResData) => {
+        const imageUrl = fileResData.filePath;
+        let graphqlQuery = {
+          query: `
+          mutation {
+            createPost(postInput: {title: "${postData.title}", content: "${postData.content}", imageUrl: "${imageUrl}"}) {
+              _id
+              title
+              content
+              imageUrl
+              creator { name }
+              createdAt
+            }
+          }
+        `,
+        };
+
+        // If image adding is successful, we start adding post data along with the URL to the image we added
+        return fetch("http://localhost:8080/graphql", {
+          method: "POST",
+          body: JSON.stringify(graphqlQuery),
+          headers: {
+            Authorization: "Bearer " + this.props.token, // JWT token set to headers
+            "Content-Type": "application/json",
+          },
+        });
+      })
       .then((res) => {
         if (res.status !== 200 && res.status !== 201) {
           throw new Error("Creating or editing a post failed!");
@@ -183,18 +205,20 @@ class Feed extends Component {
         if (resData.errors) {
           throw new Error("User login failed");
         }
+        // Add the new post data to state
         const post = {
           _id: resData.data.createPost._id,
           title: resData.data.createPost.title,
           content: resData.data.createPost.content,
           creator: resData.data.createPost.creator,
           createdAt: resData.data.createPost.createdAt,
+          imagePath: resData.data.createPost.imageUrl,
         };
-        this.setState(prevState => {
+        this.setState((prevState) => {
           let updatedPosts = [...prevState.posts];
           if (prevState.editPost) {
             const postIndex = prevState.posts.findIndex(
-              p => p._id === prevState.editPost._id
+              (p) => p._id === prevState.editPost._id
             );
             updatedPosts[postIndex] = post;
           } else {
@@ -205,10 +229,9 @@ class Feed extends Component {
             posts: updatedPosts,
             isEditing: false,
             editPost: null,
-            editLoading: false
+            editLoading: false,
           };
         });
-        
       })
       .catch((err) => {
         console.log(err);

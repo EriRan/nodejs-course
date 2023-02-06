@@ -9,7 +9,8 @@ import { dirname } from "path";
 import { graphqlHTTP } from "express-graphql";
 import graphqlSchema from "./graphql/schema.js";
 import { resolver } from "./graphql/resolvers.js";
-import auth from "./middleware/auth.js"
+import auth from "./middleware/auth.js";
+import fs from "fs";
 
 // ES6 style of getting __dirname
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -66,10 +67,24 @@ app.use((req, res, next) => {
   next();
 });
 
-
 // JWT validation middleware
 // Will set isAuth to true or false if JWT validation passes
 app.use(auth);
+
+app.put("/post-image", (req, res, next) => {
+  if (!req.isAuth) {
+    throw new Error("Not authenticated");
+  }
+  if (!req.file) {
+    return res.status(200).json({ message: "No file provided" });
+  }
+  if (req.body.oldPath) {
+    clearImage(req.body.oldPath);
+  }
+  return res
+    .status(201)
+    .json({ message: "File stored", filePath: req.file.path.replace(/\\/g, "/") }); // With Windows file path fix
+});
 
 app.use(
   "/graphql",
@@ -85,13 +100,13 @@ app.use(
       const message = err.message || "An error occurred";
       const code = err.originalError.code || 500;
       return { message: message, status: code, data: data };
-    }
+    },
   })
 );
 
 // Error handling middleware
 app.use((error, req, res, next) => {
-  console.log(error);
+  console.error(error);
   const status = error.statusCode || 500;
   const message = error.message;
   const data = error.data;
@@ -112,3 +127,12 @@ mongoose
   .catch((err) => {
     console.log(err);
   });
+
+const clearImage = (filePath) => {
+  filePath = path.join(__dirname, "..", filePath);
+  fs.unlink(filePath, (err) => {
+    if (err) {
+      console.error(err);
+    }
+  });
+};
