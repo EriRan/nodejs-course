@@ -175,7 +175,8 @@ export async function deletePost(req, res, next) {
     const user = await User.findById(req.userId);
     user.posts.pull(postId);
     const savedUser = await user.save();
-    res.status(200).json({ message: "Post deleted", post: savedUser });
+    Socket.getIO().emit("posts", {action: "delete", post: postId})
+    res.status(200).json({ message: "Post deleted" });
   } catch (err) {
     if (!err.statuscode) {
       err.statusCode = 500;
