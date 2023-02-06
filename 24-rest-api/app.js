@@ -9,6 +9,7 @@ import { dirname } from "path";
 import { graphqlHTTP } from "express-graphql";
 import graphqlSchema from "./graphql/schema.js";
 import { resolver } from "./graphql/resolvers.js";
+import auth from "./middleware/auth.js"
 
 // ES6 style of getting __dirname
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -64,6 +65,11 @@ app.use((req, res, next) => {
   }
   next();
 });
+
+
+// JWT validation middleware
+// Will set isAuth to true or false if JWT validation passes
+app.use(auth);
 
 app.use(
   "/graphql",
