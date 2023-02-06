@@ -59,6 +59,9 @@ app.use((req, res, next) => {
     "GET, POST, PUT, PATCH, DELETE, OPTIONS"
   );
   res.setHeader("Access-Control-Allow-HEADERS", "Content-Type, Authorization");
+  if (req.method === "OPTIONS") {
+    return res.sendStatus(200);
+  }
   next();
 });
 
@@ -76,7 +79,7 @@ app.use(
       const message = err.message || "An error occurred";
       const code = err.originalError.code || 500;
       return { message: message, status: code, data: data };
-    },
+    }
   })
 );
 
