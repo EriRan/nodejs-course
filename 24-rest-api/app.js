@@ -68,7 +68,7 @@ app.use(
     schema: graphqlSchema,
     rootValue: resolver,
     graphiql: true,
-    formatError(err) {
+    customFormatErrorFn(err) {
       if (!err.originalError) {
         return err;
       }
