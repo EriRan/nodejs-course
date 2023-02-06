@@ -63,10 +63,6 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use("/feed", feedRoutes);
-app.use("/auth", authRoutes);
-app.use("/user", userRoutes);
-
 // Error handling middleware
 app.use((error, req, res, next) => {
   console.log(error);
@@ -85,12 +81,7 @@ mongoose
   .connect(mongodbUrl)
   .then((result) => {
     // Different port this time because frontend application uses port 3000
-    const server = app.listen(8080);
-    // Setup Socket.io
-    const io = Socket.init(server);
-    io.on("connection", (socket) => {
-      console.log("a user connected");
-    });
+    app.listen(8080);
   })
   .catch((err) => {
     console.log(err);

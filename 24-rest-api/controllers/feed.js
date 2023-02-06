@@ -5,7 +5,6 @@ import { Post } from "../models/post.js";
 import { fileURLToPath } from "url";
 import { dirname } from "path";
 import { User } from "../models/user.js";
-import Socket from "../socket.js";
 
 // ES6 style of getting __dirname
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -60,10 +59,6 @@ export async function createPost(req, res, next) {
     const user = await User.findById(req.userId);
     user.posts.push(post);
     const savedUser = await user.save();
-    Socket.getIO().emit("posts", {
-      action: "create",
-      post: { ...post._doc, creator: { _id: req.userId, name: user.name } },
-    });
     res.status(201).json({
       message: "Post created!",
       post: newPost,
@@ -144,7 +139,6 @@ export async function updatePost(req, res, next) {
     post.content = content;
     post.imageUrl = imageUrl;
     const savedPost = await post.save();
-    Socket.getIO().emit("posts", { action: "update", post: savedPost });
     res.status(200).json({ message: "Post updated!", post: savedPost });
   } catch (err) {
     if (!err.statuscode) {
@@ -175,7 +169,6 @@ export async function deletePost(req, res, next) {
     const user = await User.findById(req.userId);
     user.posts.pull(postId);
     await user.save();
-    Socket.getIO().emit("posts", {action: "delete", post: postId})
     res.status(200).json({ message: "Post deleted" });
   } catch (err) {
     if (!err.statuscode) {
