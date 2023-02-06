@@ -1,7 +1,4 @@
 import express from "express";
-import feedRoutes from "./routes/feed.js";
-import authRoutes from "./routes/auth.js";
-import userRoutes from "./routes/user.js";
 import bodyParser from "body-parser";
 import dotenv from "dotenv";
 import mongoose from "mongoose";
@@ -9,7 +6,7 @@ import multer from "multer";
 import path from "path";
 import { fileURLToPath } from "url";
 import { dirname } from "path";
-import Socket from "./socket.js";
+
 
 // ES6 style of getting __dirname
 const __dirname = dirname(fileURLToPath(import.meta.url));
