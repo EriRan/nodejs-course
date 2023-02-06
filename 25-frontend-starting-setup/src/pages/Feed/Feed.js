@@ -57,16 +57,18 @@ class Feed extends Component {
     const graphqlQuery = {
       query: `
         {
-          posts { 
+          posts(page: ${page}) { 
             posts { 
               _id
               title
               content
+              createdAt
               creator {
                 name
               }
             } 
-            totalPosts }
+          totalPosts
+          }
         }
       `,
     };
@@ -92,7 +94,7 @@ class Feed extends Component {
               imagePath: post.imageUrl,
             };
           }),
-          totalPosts: resData.data.posts.totalItems,
+          totalPosts: resData.data.posts.totalPosts,
           postsLoading: false,
         });
       })
@@ -145,13 +147,6 @@ class Feed extends Component {
       editLoading: true,
     });
 
-    // Javascript built in object
-    // Will automatically set up some headers like content type
-    const formData = new FormData();
-    formData.append("title", postData.title);
-    formData.append("content", postData.content);
-    formData.append("image", postData.image);
-
     let graphqlQuery = {
       query: `
         mutation {
@@ -203,6 +198,7 @@ class Feed extends Component {
             );
             updatedPosts[postIndex] = post;
           } else {
+            updatedPosts.pop();
             updatedPosts.unshift(post);
           }
           return {
