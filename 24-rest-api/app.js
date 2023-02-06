@@ -6,7 +6,9 @@ import multer from "multer";
 import path from "path";
 import { fileURLToPath } from "url";
 import { dirname } from "path";
-
+import { graphqlHTTP } from "express-graphql";
+import graphqlSchema from "./graphql/schema.js";
+import { resolver } from "./graphql/resolvers.js";
 
 // ES6 style of getting __dirname
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -59,6 +61,14 @@ app.use((req, res, next) => {
   res.setHeader("Access-Control-Allow-HEADERS", "Content-Type, Authorization");
   next();
 });
+
+app.use(
+  "/graphql",
+  graphqlHTTP({
+    schema: graphqlSchema,
+    rootValue: resolver,
+  })
+);
 
 // Error handling middleware
 app.use((error, req, res, next) => {
