@@ -122,7 +122,7 @@ export async function updatePost(req, res, next) {
 
   // Finally do the actual update
   try {
-    const post = await Post.findById(postId);
+    const post = await Post.findById(postId).populate("creator");
     if (!post) {
       const error = new Error("Post not found");
       error.statusCode = 404;
@@ -130,7 +130,7 @@ export async function updatePost(req, res, next) {
       throw error;
     }
     // Confirm user has the rights to modify a post
-    if (post.creator.toString() !== req.userId) {
+    if (post.creator._id.toString() !== req.userId) {
       const error = new Error("Not authorized");
       error.statusCode = 403;
       // This error will be caught in the next catch and then passed to the error middleware with next()
@@ -143,6 +143,7 @@ export async function updatePost(req, res, next) {
     post.content = content;
     post.imageUrl = imageUrl;
     const savedPost = await post.save();
+    Socket.getIO().emit("posts", { action: "update", post: savedPost });
     res.status(200).json({ message: "Post updated!", post: savedPost });
   } catch (err) {
     if (!err.statuscode) {
@@ -162,7 +163,7 @@ export async function deletePost(req, res, next) {
       error.statusCode = 404;
       throw error;
     }
-    if (post.creator.toString() !== req.userId) {
+    if (post.creator._id.toString() !== req.userId) {
       const error = new Error("Not authorized");
       error.statusCode = 403;
       // This error will be caught in the next catch and then passed to the error middleware with next()
