@@ -5,6 +5,7 @@ import { Post } from "../models/post.js";
 import { fileURLToPath } from "url";
 import { dirname } from "path";
 import { User } from "../models/user.js";
+import Socket from "../socket.js";
 
 // ES6 style of getting __dirname
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -58,6 +59,7 @@ export async function createPost(req, res, next) {
     const user = await User.findById(req.userId);
     user.posts.push(post);
     const savedUser = await user.save();
+    Socket.getIO().emit("posts", { action: "create", post: post });
     res.status(201).json({
       message: "Post created!",
       post: newPost,
