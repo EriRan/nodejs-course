@@ -41,15 +41,17 @@ class Feed extends Component {
 
     this.loadPosts();
     const socket = openSocket("http://localhost:8080");
-    socket.on("posts", data => {
+    socket.on("posts", (data) => {
       if (data.action === "create") {
         this.addPost(data.post);
+      } else if (data.action === "update") {
+        this.updatePost(data.post);
       }
-    })
+    });
   }
 
-  addPost = post => {
-    this.setState(prevState => {
+  addPost = (post) => {
+    this.setState((prevState) => {
       const updatedPosts = [...prevState.posts];
       if (prevState.postPage === 1) {
         if (prevState.posts.length >= 2) {
@@ -59,9 +61,24 @@ class Feed extends Component {
       }
       return {
         posts: updatedPosts,
-        totalPosts: prevState.totalPosts + 1
+        totalPosts: prevState.totalPosts + 1,
       };
-    });    
+    });
+  };
+
+  updatePost = (post) => {
+    this.setState((prevState) => {
+      const updatedPosts = [...prevState.posts];
+      const updatedPostIndex = updatedPosts.findIndex(
+        (p) => p._id === post._id
+      );
+      if (updatedPostIndex > -1) {
+        updatedPosts[updatedPostIndex] = post;
+      }
+      return {
+        posts: updatedPosts,
+      };
+    });
   };
 
   loadPosts = (direction) => {
@@ -107,10 +124,10 @@ class Feed extends Component {
     event.preventDefault();
     fetch("http://localhost:8080/user/status", {
       method: "PUT",
-      body: JSON.stringify({status: this.state.status}),
+      body: JSON.stringify({ status: this.state.status }),
       headers: {
         "Content-Type": "Application/json",
-        "Authorization": "Bearer " + this.props.token, // JWT token set to headers
+        Authorization: "Bearer " + this.props.token, // JWT token set to headers
       },
     })
       .then((res) => {
@@ -120,7 +137,7 @@ class Feed extends Component {
         return res.json();
       })
       .then((resData) => {
-        console.log(resData)
+        console.log(resData);
       })
       .catch(this.catchError);
   };
@@ -184,15 +201,7 @@ class Feed extends Component {
           createdAt: resData.post.createdAt,
         };
         this.setState((prevState) => {
-          let updatedPosts = [...prevState.posts];
-          if (prevState.editPost) {
-            const postIndex = prevState.posts.findIndex(
-              (p) => p._id === prevState.editPost._id
-            );
-            updatedPosts[postIndex] = post;
-          }
           return {
-            posts: updatedPosts,
             isEditing: false,
             editPost: null,
             editLoading: false,
