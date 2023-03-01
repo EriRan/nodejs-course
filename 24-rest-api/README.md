@@ -5,4 +5,6 @@ mongodb_password = *mongo db password*
 mongodb_cluster_address = *mongo db cluster address*
 jwt_secret = *some jwt secret*
 
-You can get mongodb variables from a cloud provider like atlas. JWT secret can be any string but it is recommended that it is fairly long
+You can get mongodb variables from a cloud provider like Atlas. JWT secret can be any string but it is recommended that it is fairly long.
+
+Remember to whitelist your ip address at MongoDb Atlas!
