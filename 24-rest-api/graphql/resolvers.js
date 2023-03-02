@@ -173,7 +173,7 @@ export const resolver = {
       error.code = 404;
       throw error;
     }
-    if (post.creator._id.toString() === req.userId) {
+    if (post.creator._id.toString() !== req.userId) {
       const error = new Error("Not authorized!");
       error.code = 403;
       throw error;
@@ -224,7 +224,7 @@ export const resolver = {
     }
     // Creator not populated so creator is the id!
     // This is how data is stored in MongoDb
-    if (post.creator.toString() === req.userId) {
+    if (post.creator.toString() !== req.userId) {
       const error = new Error("Not authorized!");
       error.code = 403;
       throw error;
