@@ -3,6 +3,7 @@ import { Post } from "../models/post.js";
 import bcrypt from "bcryptjs";
 import validator from "validator";
 import jwt from "jsonwebtoken";
+import { clearImage } from "../util/file.js";
 
 /**
  * These describe what kind of code needs to be executed for graphQL queries
@@ -209,4 +210,30 @@ export const resolver = {
       updatedAt: updatedPost.updatedAt.toISOString(),
     };
   },
+  deletePost: async function({id}, req) {
+    if (!req.isAuth) {
+      const error = new Error("Not authenticated!");
+      error.code = 401;
+      throw error;
+    }
+    const post = await Post.findById(id);
+    if (!post) {
+      const error = new Error("No post found!");
+      error.code = 404;
+      throw error;
+    }
+    // Creator not populated so creator is the id!
+    // This is how data is stored in MongoDb
+    if (post.creator.toString() === req.userId) {
+      const error = new Error("Not authorized!");
+      error.code = 403;
+      throw error;
+    }
+    clearImage(post.imageUrl);
+    await Post.findByIdAndRemove(id);
+    const user = await User.findById(req.userId);
+    user.posts.pull(id);
+    await user.save();
+    return true;
+  }
 };

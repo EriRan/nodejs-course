@@ -10,7 +10,8 @@ import { graphqlHTTP } from "express-graphql";
 import graphqlSchema from "./graphql/schema.js";
 import { resolver } from "./graphql/resolvers.js";
 import auth from "./middleware/auth.js";
-import fs from "fs";
+import { clearImage } from "./util/file.js"
+
 
 // ES6 style of getting __dirname
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -128,11 +129,4 @@ mongoose
     console.log(err);
   });
 
-const clearImage = (filePath) => {
-  filePath = path.join(__dirname, "..", filePath);
-  fs.unlink(filePath, (err) => {
-    if (err) {
-      console.error(err);
-    }
-  });
-};
+
