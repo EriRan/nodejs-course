@@ -30,15 +30,15 @@ class Feed extends Component {
           }
         }
       
-      `
+      `,
     };
     fetch("http://localhost:8080/graphql", {
       method: "POST",
       headers: {
         Authorization: "Bearer " + this.props.token, // JWT token set to headers
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
       },
-      body: JSON.stringify(graphqlQuery)
+      body: JSON.stringify(graphqlQuery),
     })
       .then((res) => {
         if (res.errors) {
@@ -86,8 +86,8 @@ class Feed extends Component {
         }
       `,
       variables: {
-        page: page
-      }
+        page: page,
+      },
     };
     fetch("http://localhost:8080/graphql", {
       method: "POST",
@@ -129,16 +129,16 @@ class Feed extends Component {
         }
       `,
       variables: {
-        userStatus: this.state.status
-      }
-    }
+        userStatus: this.state.status,
+      },
+    };
     fetch("http://localhost:8080/graphql", {
       method: "POST",
       headers: {
         "Content-Type": "Application/json",
         Authorization: "Bearer " + this.props.token, // JWT token set to headers
       },
-      body: JSON.stringify(graphqlQuery)
+      body: JSON.stringify(graphqlQuery),
     })
       .then((res) => {
         if (res.errors) {
@@ -209,11 +209,11 @@ class Feed extends Component {
             }
           }
         `,
-        variables: {
-          title: postData.title,
-          content: postData.content,
-          imageUrl: imageUrl
-        }
+          variables: {
+            title: postData.title,
+            content: postData.content,
+            imageUrl: imageUrl,
+          },
         };
 
         if (this.state.editPost) {
@@ -234,8 +234,8 @@ class Feed extends Component {
               id: this.state.editPost._id,
               title: postData.title,
               content: postData.content,
-              imageUrl: imageUrl
-            }
+              imageUrl: imageUrl,
+            },
           };
         }
 
@@ -277,12 +277,14 @@ class Feed extends Component {
         };
         this.setState((prevState) => {
           let updatedPosts = [...prevState.posts];
+          let updatedTotalPosts = prevState.totalPosts;
           if (prevState.editPost) {
             const postIndex = prevState.posts.findIndex(
               (p) => p._id === prevState.editPost._id
             );
             updatedPosts[postIndex] = post;
           } else {
+            updatedTotalPosts++;
             if (prevState.posts.length >= 2) {
               updatedPosts.pop();
             }
@@ -293,6 +295,7 @@ class Feed extends Component {
             isEditing: false,
             editPost: null,
             editLoading: false,
+            totalPosts: updatedTotalPosts,
           };
         });
       })
@@ -318,15 +321,15 @@ class Feed extends Component {
         mutation {
           deletePost(id: "${postId}")
         }
-      `
-    }
+      `,
+    };
     fetch("http://localhost:8080/graphql", {
       method: "POST",
       headers: {
         Authorization: "Bearer " + this.props.token, // JWT token set to headers
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
       },
-      body: JSON.stringify(graphqlQuery)
+      body: JSON.stringify(graphqlQuery),
     })
       .then((res) => {
         return res.json();
