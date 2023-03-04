@@ -8,6 +8,7 @@ const session = require("express-session");
 const MongoDBStore = require("connect-mongodb-session")(session);
 const csrf = require("csurf");
 const flash = require("connect-flash");
+const helmet = require("helmet");
 
 const errorController = require("./controllers/error");
 const User = require("./models/user");
@@ -112,6 +113,8 @@ app.use(shopRoutes);
 app.use(authRoutes);
 
 app.get("/500", errorController.get500);
+
+app.use(helmet());
 
 app.use(errorController.get404);
 
