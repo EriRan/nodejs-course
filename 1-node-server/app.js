@@ -15,7 +15,7 @@ const User = require("./models/user");
 require("dotenv").config();
 
 const app = express();
-const mongodbUrl = `mongodb+srv://${process.env.mongodb_user}:${process.env.mongodb_password}@${process.env.mongodb_cluster_address}/shop`;
+const mongodbUrl = `mongodb+srv://${process.env.mongodb_user}:${process.env.mongodb_password}@${process.env.mongodb_cluster_address}/${process.env.mongodb_database}`;
 const store = new MongoDBStore({
   uri: mongodbUrl,
   collection: "sessions",
@@ -124,7 +124,7 @@ app.use((error, req, res, next) => {
 mongoose
   .connect(mongodbUrl)
   .then((result) => {
-    app.listen(3000);
+    app.listen(process.env.PORT || 3000);
   })
   .catch((err) => {
     console.log(err);
