@@ -1,4 +1,5 @@
 const path = require("path");
+const fs = require("fs");
 
 const express = require("express");
 const bodyParser = require("body-parser");
@@ -10,6 +11,7 @@ const csrf = require("csurf");
 const flash = require("connect-flash");
 const helmet = require("helmet");
 const compression = require("compression");
+const morgan = require("morgan");
 
 const errorController = require("./controllers/error");
 const User = require("./models/user");
@@ -113,10 +115,16 @@ app.use("/admin", adminRoutes);
 app.use(shopRoutes);
 app.use(authRoutes);
 
+const accessLogStream = fs.createWriteStream(
+  path.join(__dirname, "access.log"),
+  { flags: "a" }
+);
+
 app.get("/500", errorController.get500);
 
 app.use(helmet());
 app.use(compression()); // I'm not sure if this does anything. Didn't seem to change served file size
+app.use(morgan("combined", { stream: accessLogStream }));
 
 app.use(errorController.get404);
 
