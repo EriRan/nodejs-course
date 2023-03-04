@@ -9,6 +9,7 @@ const MongoDBStore = require("connect-mongodb-session")(session);
 const csrf = require("csurf");
 const flash = require("connect-flash");
 const helmet = require("helmet");
+const compression = require("compression");
 
 const errorController = require("./controllers/error");
 const User = require("./models/user");
@@ -115,6 +116,7 @@ app.use(authRoutes);
 app.get("/500", errorController.get500);
 
 app.use(helmet());
+app.use(compression()); // I'm not sure if this does anything. Didn't seem to change served file size
 
 app.use(errorController.get404);
 
