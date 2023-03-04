@@ -5,3 +5,5 @@ message.txt
 /images
 /data/invoices
 access.log
+server.cert
+server.key
