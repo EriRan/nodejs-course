@@ -7,6 +7,7 @@ const multer = require('multer');
 
 const feedRoutes = require('./routes/feed');
 const authRoutes = require('./routes/auth');
+const dotenv = require("dotenv");
 
 const app = express();
 
@@ -18,6 +19,8 @@ const fileStorage = multer.diskStorage({
     cb(null, new Date().toISOString() + '-' + file.originalname);
   }
 });
+
+dotenv.config();
 
 const fileFilter = (req, file, cb) => {
   if (
@@ -61,7 +64,7 @@ app.use((error, req, res, next) => {
 
 mongoose
   .connect(
-    'mongodb+srv://maximilian:9u4biljMQc4jjqbe@cluster0-ntrwp.mongodb.net/messages?retryWrites=true'
+    `mongodb+srv://${process.env.mongodb_user}:${process.env.mongodb_password}@${process.env.mongodb_cluster_address}/test-messages?retryWrites=true`
   )
   .then(result => {
     app.listen(8080);
