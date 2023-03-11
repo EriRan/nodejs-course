@@ -22,7 +22,8 @@
     "jsonwebtoken": "^8.3.0",
     "mocha": "^10.2.0",
     "mongoose": "^5.3.2",
-    "multer": "^1.4.0"
+    "multer": "^1.4.0",
+    "sinon": "^15.0.1"
   },
   "devDependencies": {
     "nodemon": "^1.18.4"
