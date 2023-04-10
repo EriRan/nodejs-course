@@ -5,7 +5,16 @@ const buttonElement = document.querySelector("button")!;
 const numResults: number[] = [];
 const textResults: string[] = [];
 
-function add(num1: number | string, num2: number | string) {
+type NumOrString = number | string;
+type Result = { val: number; timestamp: Date };
+
+// Intefaces can be forced for extending classes to implement some methods
+interface ResultObj {
+  val: number;
+  timestamp: Date;
+}
+
+function add(num1: NumOrString, num2: NumOrString) {
   if (typeof num1 === "number" && typeof num2 === "number") {
     return num1 + num2;
   } else if (typeof num1 === "string" && typeof num2 === "string") {
@@ -14,7 +23,7 @@ function add(num1: number | string, num2: number | string) {
   return +num1 + +num2;
 }
 
-function printResult(resultObj: { val: number; timestamp: Date }) {
+function printResult(resultObj: Result) {
   console.log(resultObj.val);
 }
 
@@ -28,6 +37,6 @@ buttonElement.addEventListener("click", () => {
 
   console.log(stringResult);
   console.log(result);
-  printResult({val: +result, timestamp: new Date()})
+  printResult({ val: +result, timestamp: new Date() });
   console.log(numResults, textResults);
 });
