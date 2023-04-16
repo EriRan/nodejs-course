@@ -1,7 +1,3 @@
-const text = "This is a file write test";
-const encoder = new TextEncoder();
-const data = encoder.encode(text);
-// Returns a promise
-Deno.writeFile("message.txt", data).then(() => {
-  console.log("Wrote to a file!");
-});
+import { serve } from "https://deno.land/std@0.183.0/http/server.ts";
+// Async iterable - array full of promises
+serve((_req) => new Response("Hello, world"), { port: 3000 });
