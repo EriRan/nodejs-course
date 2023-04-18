@@ -9,7 +9,7 @@ interface Todo {
 
 let todos: Array<Todo> = [];
 
-router.get("/", (ctx) => {
+router.get("/todos", (ctx) => {
   ctx.response.body = { todos: todos };
 });
 
