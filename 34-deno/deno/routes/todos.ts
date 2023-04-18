@@ -1,42 +1,45 @@
 import { Router } from "https://deno.land/x/oak/mod.ts";
-
+import { getDb } from "../helpers/db_client.ts";
+import { ObjectId } from "https://deno.land/x/mongo@v0.31.2/mod.ts";
 
 const router = new Router();
 
 interface Todo {
-  id: string;
+  id?: string;
   text: string;
 }
 
-let todos: Array<Todo> = [];
-
-router.get("/todos", (ctx) => {
-  ctx.response.body = { todos: todos };
+router.get("/todos", async (ctx) => {
+  const todos = await getDb().collection("todos").find();
+  const transformedTodos = await todos.map((todo) => {
+    return { id: todo._id, text: todo.text };
+  });
+  ctx.response.body = { todos: transformedTodos };
 });
 
 router.post("/todos", async (ctx) => {
   const data = await ctx.request.body().value;
-  const newTodo: Todo = { id: new Date().toISOString(), text: data.text };
+  const newTodo: Todo = { text: data.text };
 
-  todos.push(newTodo);
+  const id = await getDb().collection("todos").insertOne(newTodo);
+
+  newTodo.id = id.$oid;
   ctx.response.body = { message: "Created todo", todo: newTodo };
 });
 
 router.put("/todos/:todoId", async (ctx) => {
   const todoId = ctx.params.todoId;
   const data = await ctx.request.body().value;
-  const todoIndex = todos.findIndex((todoItem) => todoItem.id === todoId);
-  if (todoIndex >= 0) {
-    todos[todoIndex] = { id: todos[todoIndex].id, text: data.text };
-    ctx.response.body = { message: "Updated todo" };
-  } else {
-    ctx.response.status = 404;
-  }
+  await getDb().collection("todos").updateOne({_id: new ObjectId(todoId)}, { $set: { text: data.text }})
+
+  ctx.response.body = { message: "Updated todo" };
 });
 
-router.delete("/todos/:todoId", (ctx) => {
+router.delete("/todos/:todoId", async (ctx) => {
   const todoId = ctx.params.todoId;
-  todos = todos.filter((todoItem) => todoItem.id !== todoId);
+  
+  await getDb().collection("todos").deleteOne({_id: new ObjectId(todoId)});
+
   ctx.response.body = { message: "Deleted todo" };
 });
 
